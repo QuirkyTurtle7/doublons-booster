@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doublons de booster</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101114" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Chance qu'un booster Pokémon japonais de la série MEGA ne contienne que des doublons, et nombre de paquets à ouvrir pour atteindre 50 %.">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE quiet everyday tool, nothing shouts except the two answers
+   IDEA a collector's checklist: one ruled line per rarity that fills as the binder fills
+   PICTURE the result card (two figures + a thin curve) pinned beside the checklist
+   COLOUR white ground, near-black ink, one blue accent, greys for everything else
+   TYPE Figtree only, weights do the work
+   LAYOUT laptop: checklist left, result card sticky right; phone: slim sticky summary, checklist, then card */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#101114);--ink:light-dark(#16181d,#eceef2);--mut:light-dark(#6b7080,#9aa0ad);--line:light-dark(#e8e9ee,#2a2d34);--soft:light-dark(#f6f7f9,#181a1f);--acc:light-dark(#2f5bd3,#7c9dff);--accs:light-dark(#e9eefc,#1d2640);--warn:light-dark(#9a6700,#e3b341)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 Figtree,system-ui,"Hiragino Sans","Noto Sans JP",sans-serif;overflow-x:clip}
+.wrap{max-width:1080px;margin:0 auto;padding:0 max(4vw,16px)}
+header{padding:28px 0 18px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+h1{font-size:clamp(24px,3vw,30px);font-weight:800;letter-spacing:-.02em;line-height:1.1;margin:0}
+.meta{color:var(--mut);font-size:14px;margin-top:6px}
+.tag{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:99px;background:var(--soft);color:var(--warn);font-weight:600;font-size:13px}
+select,input,textarea,button{font:inherit;color:inherit}
+select{appearance:none;min-height:42px;padding:8px 36px 8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.8' fill='none'/%3E%3C/svg%3E") no-repeat right 12px center;font-weight:600;max-width:100%}
+input[type=number],input[type=text],textarea{font-size:16px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px;min-height:36px}
+button{cursor:pointer;border:1px solid var(--line);background:var(--bg);border-radius:8px;min-height:36px;padding:4px 12px;font-weight:600;font-size:14px}
+button:hover,select:hover{border-color:var(--mut)}
+button.pri{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button.lnk{border:0;background:none;padding:0 2px;min-height:0;font-weight:500;color:var(--mut);text-decoration:underline;text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+a{color:var(--acc)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:40px;align-items:start;padding-bottom:24px;border-top:1px solid var(--line);padding-top:20px}
+h2{font-size:13px;font-weight:600;color:var(--mut);margin:0 0 10px;letter-spacing:0}
+.quick{display:flex;gap:8px;margin-bottom:8px}
+.quick input{flex:1}
+.row{display:grid;grid-template-columns:2.9em minmax(0,1fr) auto 22px;gap:10px;align-items:center;padding:7px 0;position:relative}
+.row::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(var(--acc),var(--acc)) 0 0/var(--w,0%) 100% no-repeat,var(--line);transition:background-size .3s}
+.row.off{opacity:.45}
+.k{font-weight:800;font-size:13px}
+.t1{color:var(--mut)}.t2{color:var(--acc)}.t3{color:var(--warn)}.t4{color:light-dark(#c4320a,#ff8a65)}
+.lb{font-size:15px;line-height:1.2}.lb small{display:block;color:var(--mut);font-size:13px}
+.st{display:flex;align-items:center;gap:2px}
+.st button{width:34px;padding:0;font-size:17px;font-weight:500;border-color:transparent;background:var(--soft)}
+.st input{width:3.4em;-moz-appearance:textfield;text-align:right;font-variant-numeric:tabular-nums;border-color:transparent;font-weight:600}
+.st input:focus{border-color:var(--line)}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.st .tot{border:0;background:none;width:auto;min-width:2.6em;padding:0 4px;color:var(--mut);font-weight:500;font-size:14px;text-align:left;white-space:nowrap}
+.row input[type=checkbox]{width:18px;height:18px;accent-color:var(--acc);margin:0;cursor:pointer}
+.hint{font-size:13px;color:var(--mut);margin:10px 0 0}
+.card{position:sticky;top:16px;border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+.figs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.fl{font-size:13px;color:var(--mut);line-height:1.3;min-height:2.6em}
+.fv{font-size:clamp(34px,4.4vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin-top:6px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.fv.a{color:var(--acc)}
+.sub{font-size:13px;color:var(--mut);margin-top:4px}
+.fig{position:relative;height:190px;margin:18px 0 4px}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y}
+svg text{font:13px Figtree,sans-serif;fill:var(--mut);paint-order:stroke;stroke:var(--bg);stroke-width:4px}
+.cap{font-size:13px;color:var(--mut);margin:0;min-height:1.5em}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+th{font-weight:500;color:var(--mut);font-size:13px}
+.n{text-align:right;font-variant-numeric:tabular-nums}
+td.n{white-space:nowrap}
+tr.hi td{font-weight:700}
+.pc{display:flex;gap:4px;margin-top:6px;align-items:flex-end}
+.pc div{flex:1;text-align:center;font-size:12px;color:var(--mut)}
+.pc i{display:block;height:34px;border-radius:4px;background:linear-gradient(var(--acc),var(--acc)) bottom/100% var(--h) no-repeat,var(--accs);margin-bottom:3px}
+.more{border-top:1px solid var(--line);margin-top:8px}
+details{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;padding:14px 0;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--mut);font-weight:400;font-size:20px;line-height:1}
+details[open] summary::after{content:"−"}
+.dbody{padding:0 0 20px;max-width:760px}
+.dbody p,.dbody li{font-size:14px}
+.dbody ul{padding-left:1.1em;margin:0}.dbody li{margin:5px 0}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.links{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px;margin:6px 0}
+textarea{width:100%;min-height:140px;font:12.5px/1.4 ui-monospace,Menlo,monospace}
+.msg{font-size:13px;min-height:1.4em;margin:4px 0}.msg.err{color:light-dark(#c4320a,#ff8a65)}
+.scroll{overflow-x:auto}
+.mx input{width:4em;min-height:32px;padding:3px 6px;font-size:14px}
+.mx select{min-height:32px;font-size:13px;padding:3px 26px 3px 8px;background-position:right 8px center}
+.mx th,.mx td{vertical-align:top}
+.bar{display:none}
+footer{color:var(--mut);font-size:13px;padding:20px 0 36px}
+@media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr);gap:24px}.card{position:static}.bar{display:flex;position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:8px max(4vw,16px);justify-content:space-between;gap:12px;font-size:13px;color:var(--mut)}.bar b{font-size:20px;color:var(--ink);font-weight:800;margin-left:4px;font-variant-numeric:tabular-nums}.bar .a b{color:var(--acc)}}
+@media(max-width:420px){.row{grid-template-columns:2.4em minmax(0,1fr) auto 20px;gap:6px}.st button{width:30px}.st input{width:2.9em;padding:4px}th,td{padding:6px 3px}.card{padding:16px}.figs{gap:12px}}
+@media(prefers-reduced-motion:reduce){.row::after{transition:none}}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Doublons de booster</h1>
+      <div class="meta" id="meta"></div>
+    </div>
+    <select id="set" aria-label="Set visé"></select>
+  </header>
+
+  <div class="grid">
+    <section>
+      <h2>Cartes différentes que tu possèdes</h2>
+      <div class="quick"><input type="text" id="quick" placeholder="Saisie rapide : 32 C, 12 U, 2 R, 3 RR" aria-label="Saisie rapide"><button id="qgo">OK</button></div>
+      <div id="rows"></div>
+      <p class="hint">Touche « / total » pour tout cocher. Décoche une rareté que tu ne collectionnes pas : elle comptera comme doublon. <button class="lnk" id="qclr">Tout remettre à 0</button></p>
+    </section>
+
+    <section class="card" aria-live="polite">
+      <div class="figs">
+        <div><div class="fl">Prochain paquet 100 % doublons</div><div class="fv" id="p0">–</div><div class="sub" id="p0s"></div></div>
+        <div><div class="fl">Paquets à ouvrir d'un coup pour 50 %</div><div class="fv a" id="n50">–</div><div class="sub" id="n50s"></div></div>
+      </div>
+      <div class="fig" id="fig"><svg id="chart" role="img" aria-label="Chance que le paquet suivant soit 100 % doublons selon le nombre de paquets ouverts"></svg></div>
+      <p class="cap" id="hover">Paquets ouverts d'un coup → chance que le suivant soit 100 % doublons.</p>
+      <table id="boxes" style="margin-top:12px"><thead><tr><th>Tu ouvres</th><th class="n">Coût</th><th class="n">Nouvelles</th><th class="n">Suivant 100 % doublons</th></tr></thead><tbody></tbody></table>
+      <p class="cap" style="margin-top:16px">Chance de doublon, carte par carte, dans ton prochain paquet</p>
+      <div class="pc" id="pack"></div>
+    </section>
+  </div>
+
+  <div class="more">
+    <details><summary>Hypothèses et méthode</summary><div class="dbody">
+      <ul id="hyp"></ul>
+      <p>Le calcul est exact (inclusion-exclusion sur les cartes encore manquantes), sans simulation ; il a été vérifié contre 60 000 tirages simulés par cas, écarts sous 0,5 point. « Paquets pour 50 % » est le plus petit nombre N de paquets tel que, après les avoir tous ouverts, le paquet suivant a au moins une chance sur deux d'être entièrement composé de doublons.</p>
+    </div></details>
+    <details><summary>Mettre à jour les données</summary><div class="dbody">
+      <p class="meta" id="dver" style="margin-top:0"></p>
+      <div class="links" id="slinks"></div>
+      <div class="links" id="glinks"></div>
+      <p>La consigne copiée contient tes données actuelles. Colle-la dans une conversation Claude avec la recherche web, puis colle ici le JSON qu'il te rend et importe-le.</p>
+      <div class="btns"><button class="pri" id="cprompt">Copier la consigne de mise à jour</button></div>
+      <p class="msg" id="pmsg"></p>
+      <textarea id="io" spellcheck="false" placeholder="JSON à importer (toutes les données ou un seul set)"></textarea>
+      <div class="btns"><button class="pri" id="imp">Importer</button><button id="exp">Exporter tout</button><button id="cpy">Copier</button><button id="dup">Dupliquer ce set</button><button id="rst">Données d'origine</button></div>
+      <p class="msg" id="iomsg"></p>
+    </div></details>
+    <details id="ed"><summary>Modifier le set sélectionné</summary><div class="dbody" id="edbody" style="max-width:none"></div></details>
+    <details><summary>Sources</summary><div class="dbody"><ul id="src"></ul></div></details>
+  </div>
+  <footer>Taux d'apparition non officiels (relevés de la communauté japonaise). Ta collection est enregistrée sur cet appareil seulement. Fonctionne hors ligne.</footer>
+</div>
+
+<script>
+{
+const Engine=(()=>{const ratio=(a,b,n)=>{let p=1;for(let i=0;i<n;i++){if(a-i<=0)return 0;p*=(a-i)/(b-i)}return p};
+function packComps(set){const keys=set.rarities.map(r=>r.key);const idx=Object.fromEntries(keys.map((k,i)=>[k,i]));let dist=new Map([[keys.map(()=>0).join(','),1]]);
+for(const slot of set.slots){const n=Math.max(1,slot.n|0);const outs=[];let sum=0;for(const[r,perBox]of Object.entries(slot.hits||{})){if(!(r in idx))continue;const p=Math.max(0,+perBox||0)/(set.packsPerBox*n);if(p>0){outs.push([idx[r],p]);sum+=p}}
+if(slot.filler in idx&&sum<1)outs.push([idx[slot.filler],1-sum]);else if(sum>0)outs.forEach(o=>o[1]/=sum);if(!outs.length)continue;
+for(let i=0;i<n;i++){const next=new Map();for(const[key,p]of dist){const v=key.split(',').map(Number);for(const[ri,po]of outs){v[ri]++;const k2=v.join(',');next.set(k2,(next.get(k2)||0)+p*po);v[ri]--}}dist=next}}
+return[...dist].map(([k,p])=>({p,k:k.split(',').map(Number)}))}
+function prepare(set,owned,tracked){const T=set.rarities.map(r=>Math.max(0,r.count|0));const O=set.rarities.map((r,i)=>tracked[r.key]===false?T[i]:Math.min(T[i],Math.max(0,owned[r.key]|0)));const U=T.map((t,i)=>t-O[i]);
+const comps=packComps(set);const R=T.length;const W=new Map();
+for(const{p,k}of comps){const j=new Array(R).fill(0);const rec=(r,w)=>{if(w===0)return;if(r===R){const key=j.join(',');W.set(key,(W.get(key)||0)+p*w);return}const mj=Math.min(k[r],U[r]);for(let x=0;x<=mj;x++){j[r]=x;let c=1;for(let i=0;i<x;i++)c=c*(k[r]-i)/(i+1);rec(r+1,w*(x%2?-1:1)*c*ratio(U[r],T[r],x))}j[r]=0};rec(0,1)}
+const terms=[];for(const[key,w]of W){const j=key.split(',').map(Number);let q=0;for(const{p,k}of comps){let t=p;for(let r=0;r<R&&t>0;r++)if(j[r])t*=ratio(T[r]-j[r],T[r],k[r]);q+=t}terms.push({w,q:Math.min(1,Math.max(0,q))})}
+const miss=T.map((t,r)=>{if(!t)return 1;let q=0;for(const{p,k}of comps)q+=p*(1-Math.min(1,k[r]/t));return q});
+return{T,O,U,comps,terms,miss}}
+const fullDup=(pr,N)=>{let s=0;for(const{w,q}of pr.terms)s+=w*(q===1?1:Math.pow(q,N));return Math.min(1,Math.max(0,s))};
+function packsFor(pr,t){if(fullDup(pr,0)>=t)return 0;let lo=0,hi=1;while(fullDup(pr,hi)<t){lo=hi;hi*=2;if(hi>5e6)return Infinity}while(hi-lo>1){const m=(lo+hi)>>1;if(fullDup(pr,m)>=t)hi=m;else lo=m}return hi}
+const newCards=(pr,N)=>pr.U.reduce((a,u,r)=>a+u*(1-Math.pow(pr.miss[r],N)),0);
+return{prepare,fullDup,packsFor,newCards}})();
+
+/* ---------- données internes ---------- */
+const LAB={C:'Commune',U:'Peu commune',R:'Rare',RR:'Double rare (ex)',AR:'Art rare',SR:'Super rare',SAR:'Special art rare',MUR:'Méga ultra rare'};
+const TIER={C:1,U:1,R:1,N:1,NRG:1,PIKA:2,RR:2,MIR:2,CLS:2,AR:3,SR:3,SRT:3,SRS:3,MA:4,SAR:4,MUR:4,FUR:4};
+const std=(c,u,r,rr,ar,sr,sar,mur)=>Object.entries({C:c,U:u,R:r,RR:rr,AR:ar,SR:sr,SAR:sar,MUR:mur}).map(([key,count])=>({key,label:LAB[key],count}));
+const slots5=(sar,sr=1.8,rr=4)=>[{label:'Cartes 1–3',n:3,filler:'C',hits:{}},{label:'Carte 4',n:1,filler:'U',hits:{AR:3,SR:sr,SAR:sar,MUR:0.02}},{label:'Carte 5',n:1,filler:'U',hits:{R:7,RR:rr}}];
+const S={gp:{l:'gamepedia — taux types des extensions (C 3/paquet, U 1–2, R 7, RR 4, AR 3 par boîte)',u:'https://premium.gamepedia.jp/pokeca/archives/4360'},
+alt:{l:'altema — taux Méga Brave (MUR ~1/50 boîtes, SAR ~1/6, 2 SR, 3 AR, 4 RR par boîte)',u:'https://altema.jp/pokemoncard/megabrave'}};
+const base={cardsPerPack:5,packsPerBox:30,kind:'Extension'};
+const DATA0={version:1,updated:'2026-11-25',sets:[
+{...base,id:'M7',name:'Hadou Seeker',jp:'ハドウシーカー',release:'2026-11-27',price:200,status:'provisoire',rarities:std(36,26,8,8,12,16,6,1),slots:slots5(0.33),official:'https://www.pokemon-card.com/ex/m7/',
+ note:'Liste complète non publiée au 25/11 : 78 cartes de base et une SAR n°113, donc 35 secrètes. Répartition par rareté estimée sur le modèle des sets précédents : à corriger à la sortie.',sources:[{l:'Page officielle M7',u:'https://www.pokemon-card.com/ex/m7/'},{l:'Cartes révélées (Samurai Sword Tokyo)',u:'https://samuraiswordtokyo.com/fr/pages/m7-card-list'}]},
+{id:'M6a',name:'30th CELEBRATION',jp:'30th CELEBRATION',release:'2026-09-16',price:360,cardsPerPack:6,packsPerBox:20,kind:'Spéciale (30 ans)',status:'partielle',
+ rarities:[{key:'PIKA',label:'Pikachu (30 illustrations)',count:30},{key:'NRG',label:'Énergie de base 30th',count:8,track:false},{key:'N',label:'Sans symbole (hors Pikachu)',count:63},{key:'RR',label:'Double rare (ex)',count:10},{key:'CLS',label:'Classic Collection (136–165)',count:30},{key:'AR',label:'Art rare',count:20},{key:'SAR',label:'Special art rare',count:10},{key:'FUR',label:'Futuristic rare',count:2}],
+ slots:[{label:'Pikachu',n:1,filler:'PIKA',hits:{}},{label:'Énergie',n:1,filler:'NRG',hits:{}},{label:'Cartes 3–4',n:2,filler:'N',hits:{}},{label:'Carte 5',n:1,filler:'N',hits:{RR:5,CLS:2}},{label:'Carte 6',n:1,filler:'N',hits:{AR:4,SAR:0.9,FUR:0.1}}],
+ note:'6 cartes dont 1 Pikachu et 1 énergie garantis. Boîte de 20 paquets déduite du prix (7 200 ¥). Taux des cartes rares très approximatifs (estimations SNKRDUNK) ; les 3 cartes RGB sont ignorées faute de taux.',sources:[{l:'Liste par rareté (Yuyu-tei)',u:'https://yuyu-tei.jp/sell/poc/s/m06a'},{l:'Taux estimés (SNKRDUNK)',u:'https://snkrdunk.com/articles/30971/'}]},
+{...base,id:'M6',name:'Storm Emeralda',jp:'ストームエメラルダ',release:'2026-07-31',price:200,status:'vérifiée',rarities:std(38,22,8,8,12,18,6,1),slots:slots5(0.33,1.8,4.5),official:'https://www.pokemon-card.com/ex/m6/',
+ note:'Les 3 stades en deux parties (071–076) sont comptés comme 6 cartes U.',sources:[{l:'Liste et raretés (Samurai Sword Tokyo)',u:'https://samuraiswordtokyo.com/blogs/news/storm-emeralda-m6-card-list-all-73-cards'},{l:'Taux estimés (gamepedia)',u:'https://premium.gamepedia.jp/pokeca/archives/24274'}]},
+{...base,id:'M5',name:'Abyss Eye',jp:'アビスアイ',release:'2026-05-22',price:200,status:'vérifiée',rarities:std(38,27,8,8,12,18,6,1),slots:slots5(0.33),official:'https://www.pokemon-card.com/ex/m5/',sources:[{l:'Liste et raretés (Samurai Sword Tokyo)',u:'https://www.samuraiswordtokyo.com/pages/m5-card-list'}]},
+{...base,id:'M4',name:'Ninja Spinner',jp:'ニンジャスピナー',release:'2026-03-13',price:180,status:'vérifiée',rarities:std(38,29,8,8,12,18,6,1),slots:slots5(0.33),sources:[{l:'Bulbapedia — Ninja Spinner',u:'https://bulbapedia.bulbagarden.net/wiki/Ninja_Spinner_(TCG)'}]},
+{...base,id:'M3',name:'Nihil Zero',jp:'ムニキスゼロ',release:'2026-01-23',price:180,status:'vérifiée',rarities:std(38,26,8,8,12,18,6,1),slots:slots5(0.25),official:'https://www.pokemon-card.com/ex/m3/',sources:[{l:'Bulbapedia — Nihil Zero',u:'https://bulbapedia.bulbagarden.net/wiki/Nihil_Zero_(TCG)'}]},
+{id:'M2a',name:'MEGA Dream ex',jp:'MEGAドリームex',release:'2025-11-28',price:550,cardsPerPack:10,packsPerBox:10,kind:'High Class',status:'vérifiée',
+ rarities:[{key:'N',label:'Sans symbole (base, non-ex)',count:166},{key:'RR',label:'Double rare (ex)',count:27},{key:'MIR',label:'Miroir (variantes)',count:236,track:false},{key:'AR',label:'Art rare',count:20},{key:'SRT',label:'SR dresseur (objets, outils, stades)',count:6},{key:'SRS',label:'SR supporter',count:3},{key:'MA',label:'Méga attaque rare',count:10},{key:'SAR',label:'Special art rare',count:17},{key:'MUR',label:'Méga ultra rare',count:1}],
+ slots:[{label:'Cartes 1–7',n:7,filler:'N',hits:{}},{label:'Carte 8',n:1,filler:'N',hits:{MIR:7}},{label:'Carte 9 (ex)',n:1,filler:'N',hits:{RR:9}},{label:'Carte 10',n:1,filler:'N',hits:{AR:3,SRT:1,MA:1,SAR:0.4,SRS:0.1,MUR:0.02}}],official:'https://www.pokemon-card.com/ex/m2a/',
+ note:'Boîte de 10 paquets de 10 cartes, un ex garanti par paquet. Composition vérifiée ; répartition par emplacement estimée à partir des taux par boîte (altema). God packs ignorés.',sources:[{l:'Taux par boîte (altema)',u:'https://altema.jp/pokemoncard/megamegaparade'},{l:'Liste complète (Pokémon Wiki JP)',u:'https://wiki.pokemonwiki.com/wiki/%E3%83%9D%E3%82%B1%E3%83%A2%E3%83%B3%E3%82%AB%E3%83%BC%E3%83%89%E3%82%B2%E3%83%BC%E3%83%A0_MEGA_%E3%83%8F%E3%82%A4%E3%82%AF%E3%83%A9%E3%82%B9%E3%83%91%E3%83%83%E3%82%AF_MEGA%E3%83%89%E3%83%AA%E3%83%BC%E3%83%A0ex'}]},
+{...base,id:'M2',name:'Inferno X',jp:'インフェルノX',release:'2025-09-26',price:180,status:'vérifiée',rarities:std(38,26,8,8,12,17,6,1),slots:slots5(0.25),sources:[{l:'Bulbapedia — Inferno X',u:'https://bulbapedia.bulbagarden.net/wiki/Inferno_X_(TCG)'}]},
+{...base,id:'M1L',name:'Mega Brave',jp:'メガブレイブ',release:'2025-08-01',price:180,status:'vérifiée',rarities:std(31,21,6,5,12,11,5,1),slots:slots5(1/6,2),sources:[{l:'Bulbapedia — Mega Brave / Mega Symphonia',u:'https://bulbapedia.bulbagarden.net/wiki/M1L'},S.alt]},
+{...base,id:'M1S',name:'Mega Symphonia',jp:'メガシンフォニア',release:'2025-08-01',price:180,status:'vérifiée',rarities:std(31,21,6,5,12,11,5,1),slots:slots5(1/6,2),sources:[{l:'Bulbapedia — Mega Brave / Mega Symphonia',u:'https://bulbapedia.bulbagarden.net/wiki/M1L'},S.alt]}
+],common:[S.gp,S.alt]};
+
+
+/* ---------- état ---------- */
+const LS={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const clone=o=>JSON.parse(JSON.stringify(o));
+let data=LS.get('pkdup:data')||clone(DATA0);
+let st=LS.get('pkdup:state')||{sel:'M6',owned:{M6:{C:32,U:12,R:2,RR:3}},tracked:{}};
+st.owned=st.owned||{};st.tracked=st.tracked||{};
+const save=()=>LS.set('pkdup:state',st);
+const saveData=()=>LS.set('pkdup:data',data);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nf=(x,d=1)=>x.toLocaleString('fr-FR',{maximumFractionDigits:d});
+const pct=p=>p>=0.9995&&p<1?'> 99,9 %':p>0&&p<0.0005?'< 0,1 %':nf(p*100,1)+' %';
+const yen=x=>nf(Math.round(x),0)+' ¥';
+const date=s=>{try{return new Date(s+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})}catch(e){return s}};
+const cur=()=>data.sets.find(s=>s.id===st.sel)||data.sets[0];
+const owned=set=>(st.owned[set.id]=st.owned[set.id]||{});
+const tracked=set=>{const t=st.tracked[set.id]||{};const o={};set.rarities.forEach(r=>o[r.key]=r.key in t?t[r.key]:r.track!==false);return o};
+const tier=k=>'t'+(TIER[k]||3);
+const nPack=set=>set.slots.reduce((a,s)=>a+(Math.max(1,s.n|0)),0);
+const STAT={provisoire:'données provisoires',partielle:'données partielles',modifiée:'données modifiées',importée:'données importées'};
+const boxes=n=>{const b=n/cur().packsPerBox;return `${nf(b,1)} boîte${b>=2?'s':''}`};
+let prep=null,curve=null;
+
+function validSet(s){return s&&typeof s.id==='string'&&s.id&&Array.isArray(s.rarities)&&s.rarities.length&&s.rarities.every(r=>r&&typeof r.key==='string'&&r.key&&Number.isFinite(+r.count))&&Array.isArray(s.slots)&&s.slots.length&&s.slots.every(x=>x&&typeof x.filler==='string')&&(+s.packsPerBox)>0}
+function normSet(s){s.packsPerBox=+s.packsPerBox;s.price=+s.price||0;s.name=s.name||s.id;s.jp=s.jp||s.name;s.release=s.release||'';s.status=s.status||'importée';s.kind=s.kind||'';s.rarities.forEach(r=>{r.count=Math.max(0,r.count|0);r.label=r.label||LAB[r.key]||r.key});s.slots.forEach(x=>{x.n=Math.max(1,x.n|0);x.hits=x.hits||{};x.label=x.label||'Emplacement'});s.cardsPerPack=nPack(s);return s}
+function upsert(s){const i=data.sets.findIndex(x=>x.id===s.id);if(i>=0)data.sets[i]=s;else data.sets.unshift(s);saveData()}
+
+
+function renderHead(){
+  $('#set').innerHTML=data.sets.map(s=>`<option value="${esc(s.id)}"${s.id===st.sel?' selected':''}>${esc(s.id)} · ${esc(s.name)}</option>`).join('');
+  const s=cur();
+  $('#meta').innerHTML=esc([s.jp,date(s.release),`${s.price} ¥ le paquet`,`${nPack(s)} cartes`,`${s.packsPerBox} paquets par boîte`].join(' · '))+(s.status!=='vérifiée'?`<span class="tag">${esc(STAT[s.status]||s.status)}</span>`:'');
+}
+const rowPct=(r,v,on)=>r.count?(on?v/r.count*100:100):0;
+function renderRows(){
+  const s=cur(),o=owned(s),t=tracked(s);
+  $('#rows').innerHTML=s.rarities.map(r=>{const v=Math.min(r.count,o[r.key]|0);const on=t[r.key];return `<div class="row${on?'':' off'}" data-k="${esc(r.key)}" style="--w:${rowPct(r,v,on)}%">
+  <span class="k ${tier(r.key)}">${esc(r.key)}</span>
+  <span class="lb">${esc(r.label)}</span>
+  <span class="st"><button data-a="dec" aria-label="Retirer une ${esc(r.key)}">−</button><input type="number" id="o-${esc(r.key)}" min="0" max="${r.count|0}" value="${v}" inputmode="numeric" aria-label="${esc(r.label)} possédées"><button data-a="inc" aria-label="Ajouter une ${esc(r.key)}">+</button><button class="tot" data-a="max" title="Toutes possédées">/ ${r.count|0}</button></span>
+  <input type="checkbox" data-a="trk"${on?' checked':''} title="Je collectionne cette rareté" aria-label="Je collectionne les ${esc(r.key)}"></div>`}).join('');
+}
+function updRow(el,r,v,on){el.classList.toggle('off',!on);el.style.setProperty('--w',rowPct(r,v,on)+'%')}
+
+function compute(){
+  const s=cur();prep=Engine.prepare(s,owned(s),tracked(s));
+  const p0=Engine.fullDup(prep,0),n50=Engine.packsFor(prep,0.5),n90=Engine.packsFor(prep,0.9),ppb=s.packsPerBox;
+  $('#p0').textContent=pct(p0);
+  $('#p0s').textContent=p0>=0.5?'Déjà au-dessus de 1 sur 2':p0<1e-6?'Pratiquement impossible pour l\'instant':`Environ 1 paquet sur ${nf(1/p0,0)}`;
+  const nTxt=n50===0?'0':isFinite(n50)?nf(n50,0):'∞';
+  $('#n50').textContent=nTxt;
+  $('#n50s').textContent=n50===0?'50 % déjà atteint':isFinite(n50)?`${boxes(n50)} · ${yen(n50*s.price)} · +${nf(Engine.newCards(prep,n50),0)} cartes`:'Non atteignable avec ces données';
+  $('#bar').innerHTML=`<span>Maintenant<b>${esc(pct(p0))}</b></span><span class="a">50 % après<b>${esc(nTxt)}</b> paquets</span>`;
+  const nMax=Math.max(10,Math.min(isFinite(n90)?Math.ceil(n90*1.1):(isFinite(n50)?n50*3:300),5e6));
+  const pts=[];for(let i=0;i<=140;i++){const n=Math.round(nMax*i/140);pts.push([n,Engine.fullDup(prep,n)])}
+  curve={pts,nMax,n50};drawChart();
+  const rows=[[ppb,'1 boîte'],[2*ppb,'2 boîtes'],[3*ppb,'3 boîtes'],[5*ppb,'5 boîtes']];
+  if(isFinite(n50)&&n50>0)rows.push([n50,`${nf(n50,0)} paquets`]);
+  rows.sort((a,b)=>a[0]-b[0]||(a[1].includes('boîte')?-1:1));for(let i=rows.length-1;i>0;i--)if(rows[i][0]===rows[i-1][0])rows.splice(i,1);
+  $('#boxes tbody').innerHTML=rows.map(([n,l])=>`<tr${n===n50?' class="hi"':''}><td>${esc(l)}</td><td class="n">${yen(n*s.price)}</td><td class="n">+${nf(Engine.newCards(prep,n),0)}</td><td class="n">${pct(Engine.fullDup(prep,n))}</td></tr>`).join('');
+  // chance de doublon par carte du prochain paquet
+  const keys=s.rarities.map(r=>r.key),T=prep.T,O=prep.O,cards=[];
+  for(const sl of s.slots){const n=Math.max(1,sl.n|0);const outs=[];let sum=0;for(const[r,pb]of Object.entries(sl.hits||{})){const i=keys.indexOf(r);if(i<0)continue;const p=Math.max(0,+pb||0)/(ppb*n);if(p>0){outs.push([i,p]);sum+=p}}const fi=keys.indexOf(sl.filler);if(fi>=0&&sum<1)outs.push([fi,1-sum]);else if(sum>0)outs.forEach(x=>x[1]/=sum);
+    const pd=outs.reduce((a,[i,p])=>a+p*(T[i]?O[i]/T[i]:1),0);outs.sort((a,b)=>b[1]-a[1]);
+    for(let k=0;k<n&&cards.length<12;k++)cards.push({pd,tip:`${sl.label} : `+outs.map(([i,p])=>`${keys[i]} ${pct(p)}`).join(', ')})}
+  $('#pack').innerHTML=cards.map((c,i)=>`<div title="${esc(c.tip)}"><i style="--h:${(c.pd*100).toFixed(1)}%"></i>${nf(c.pd*100,0)}%</div>`).join('');
+}
+function drawChart(){
+  const svg=$('#chart');if(!curve)return;const W=svg.clientWidth,H=svg.clientHeight;if(!W||!H)return;
+  const m={l:44,r:8,t:8,b:24},iw=W-m.l-m.r,ih=H-m.t-m.b,{pts,nMax,n50}=curve;
+  const x=n=>m.l+iw*n/nMax,y=f=>m.t+ih*(1-f);
+  const raw=nMax/(W<420?3:5),mag=10**Math.floor(Math.log10(raw)),step=[1,2,5,10].map(k=>k*mag).find(k=>k>=raw)||mag*10;
+  let g='';for(const v of [0,.5,1])g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"${v===.5?' stroke-dasharray="3 4"':''}/><text x="${m.l-6}" y="${y(v)+4}" text-anchor="end">${v*100}%</text>`;
+  for(let v=0;v<=nMax;v+=step)g+=`<text x="${x(v)}" y="${H-4}" text-anchor="middle">${nf(v,0)}</text>`;
+  const line=pts.map(([n,f],i)=>`${i?'L':'M'}${x(n).toFixed(1)},${y(f).toFixed(1)}`).join('');
+  let mk='';if(isFinite(n50)&&n50>0&&n50<=nMax){const px=x(n50),py=y(.5),right=px<W*.6;mk=`<line x1="${px}" x2="${px}" y1="${py}" y2="${y(0)}" stroke="var(--acc)" stroke-dasharray="3 4"/><circle cx="${px}" cy="${py}" r="5" fill="var(--acc)" stroke="var(--bg)" stroke-width="2.5"/><text x="${right?px+10:px-10}" y="${py-10}" text-anchor="${right?'start':'end'}" style="fill:var(--ink);font-weight:600">${nf(n50,0)} paquets</text>`}
+  svg.innerHTML=`${g}<path d="${line}L${x(nMax)},${y(0)}L${x(0)},${y(0)}Z" fill="var(--accs)" opacity=".7"/><path d="${line}" fill="none" stroke="var(--acc)" stroke-width="2.25" stroke-linejoin="round"/>${mk}<line id="hl" y1="${m.t}" y2="${y(0)}" stroke="var(--mut)" opacity="0"/><rect id="hz" x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent" style="pointer-events:all;cursor:crosshair"/>`;
+  const hz=svg.querySelector('#hz'),hl=svg.querySelector('#hl');
+  const mv=e=>{const r=svg.getBoundingClientRect();const n=Math.max(0,Math.min(nMax,Math.round((e.clientX-r.left-m.l)/iw*nMax)));hl.setAttribute('x1',x(n));hl.setAttribute('x2',x(n));hl.setAttribute('opacity','.6');$('#hover').textContent=`${nf(n,0)} paquets (${boxes(n)}) → suivant 100 % doublons à ${pct(Engine.fullDup(prep,n))}`};
+  hz.addEventListener('pointermove',mv);hz.addEventListener('pointerdown',mv);
+}
+const ro=new ResizeObserver(()=>drawChart());ro.observe($('#fig'));
+
+function renderInfo(){
+  const s=cur();
+  const hyp=['Dans un paquet, une carte d\'une rareté donnée est tirée au hasard parmi les cartes de cette rareté, sans doublon à l\'intérieur du paquet.',
+   s.id==='M2a'||s.id==='M6a'?'Structure du paquet propre à ce produit : détail des emplacements dans « Modifier le set sélectionné ».':'Structure des boosters japonais 5 cartes (observée, non officielle) : cartes 1 à 3 communes ; carte 4 peu commune, parfois remplacée par AR, SR, SAR ou MUR ; carte 5 peu commune, rare ou double rare.',
+   'Taux par boîte issus des relevés de la communauté japonaise, pas de chiffres officiels. Tu peux les corriger.',
+   'Paquets indépendants : garanties par boîte et « god packs » ignorés. Acheter des boîtes scellées lisse un peu les résultats sans changer l\'ordre de grandeur.',
+   'Une rareté décochée est toujours comptée comme doublon (pratique pour les miroirs, énergies ou raretés que tu ne vises pas).'];
+  if(s.note)hyp.unshift(`${s.id} : ${s.note}`);
+  $('#hyp').innerHTML=hyp.map(h=>`<li>${esc(h)}</li>`).join('');
+  const href=u=>/^https:\/\//.test(u||'')?esc(u):'#';
+  $('#src').innerHTML=[...(s.sources||[]),...(data.common||[])].map(x=>`<li><a href="${href(x.u)}" target="_blank" rel="noopener">${esc(x.l)}</a></li>`).join('');
+  const g=q=>'https://www.google.com/search?q='+encodeURIComponent(q);
+  $('#slinks').innerHTML=[[`${s.jp} 封入率`,`Taux de ${s.id}`],[`${s.jp} カードリスト 全種類`,`Liste complète de ${s.id}`]].map(([q,l])=>`<a href="${href(g(q))}" target="_blank" rel="noopener">${esc(l)}</a>`).join('')+(s.official?`<a href="${href(s.official)}" target="_blank" rel="noopener">Page officielle ${esc(s.id)}</a>`:'');
+  $('#glinks').innerHTML=`<a href="https://www.pokemon-card.com/products/" target="_blank" rel="noopener">Produits officiels</a><a href="${g('ポケカ MEGA 新弾 発売日 拡張パック')}" target="_blank" rel="noopener">Nouveaux sets MEGA</a><a href="https://bulbapedia.bulbagarden.net/wiki/List_of_Japanese_Pok%C3%A9mon_Trading_Card_Game_expansions" target="_blank" rel="noopener">Extensions japonaises (Bulbapedia)</a>`;
+  const custom=!!LS.get('pkdup:data');
+  $('#dver').textContent=`Données du ${date(data.updated||'2026-11-25')} · ${data.sets.length} sets${custom?' · version modifiée par toi':''}.`;
+}
+function renderEditor(){
+  const s=cur(),keys=s.rarities.map(r=>r.key);
+  const head=s.slots.map((sl,i)=>`<th class="n">${esc(sl.label)}<br><label>× <input type="number" min="1" max="12" data-e="n" data-i="${i}" value="${Math.max(1,sl.n|0)}" aria-label="cartes dans cet emplacement"></label><br><select data-e="fill" data-i="${i}" aria-label="rareté de remplissage">${keys.map(k=>`<option${k===sl.filler?' selected':''}>${esc(k)}</option>`).join('')}</select></th>`).join('');
+  const body=s.rarities.map((r,ri)=>`<tr><td><b>${esc(r.key)}</b></td><td class="n"><input type="number" min="0" data-e="cnt" data-r="${ri}" value="${r.count|0}" aria-label="cartes ${esc(r.key)}"></td>${s.slots.map((sl,i)=>`<td class="n">${r.key===sl.filler?'<span class="sub">reste</span>':`<input type="number" min="0" step="any" data-e="hit" data-i="${i}" data-k="${esc(r.key)}" value="${sl.hits&&sl.hits[r.key]?+sl.hits[r.key]:''}" placeholder="0" aria-label="${esc(r.key)} par boîte">`}</td>`).join('')}</tr>`).join('');
+  $('#edbody').innerHTML=`<p>Cases : nombre moyen de cartes de cette rareté par boîte, dans cet emplacement. « reste » : rareté qui remplit l'emplacement le reste du temps.</p>
+  <div class="btns"><label>Paquets par boîte <input type="number" min="1" data-e="ppb" value="${s.packsPerBox}" style="width:4.5em"></label><label>Prix du paquet (¥) <input type="number" min="0" data-e="price" value="${s.price}" style="width:5em"></label></div>
+  <div class="scroll mx"><table><thead><tr><th>Rareté</th><th class="n">Cartes</th>${head}</tr></thead><tbody>${body}</tbody></table></div>
+  <p style="margin-top:16px">JSON du set (pour ajouter une rareté ou un emplacement) :</p><textarea id="sjson" spellcheck="false">${esc(JSON.stringify(s,null,1))}</textarea><div class="btns"><button id="sapply">Appliquer ce JSON</button>${DATA0.sets.some(x=>x.id===s.id)?'':'<button id="sdel">Supprimer ce set</button>'}</div><p class="msg" id="emsg"></p>`;
+}
+function all(){renderHead();renderRows();compute();renderInfo();renderEditor()}
+const msg=(id,t,err)=>{const e=$(id);e.textContent=t;e.classList.toggle('err',!!err)};
+
+/* ---------- événements ---------- */
+const rowCtx=el=>{const row=el.closest('.row');const s=cur();return{row,s,r:s.rarities.find(x=>x.key===row.dataset.k)}};
+$('#set').addEventListener('change',e=>{st.sel=e.target.value;save();all()});
+$('#rows').addEventListener('input',e=>{if(e.target.type!=='number')return;const{row,s,r}=rowCtx(e.target);const v=Math.max(0,Math.min(r.count,parseInt(e.target.value,10)||0));owned(s)[r.key]=v;save();updRow(row,r,v,tracked(s)[r.key]);compute()});
+$('#rows').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;const{row,s,r}=rowCtx(b);const o=owned(s);let v=Math.min(r.count,o[r.key]|0);v=a==='inc'?Math.min(r.count,v+1):a==='dec'?Math.max(0,v-1):r.count;o[r.key]=v;row.querySelector('input[type=number]').value=v;save();updRow(row,r,v,tracked(s)[r.key]);compute()});
+$('#rows').addEventListener('change',e=>{if(e.target.dataset.a!=='trk')return;const{row,s,r}=rowCtx(e.target);(st.tracked[s.id]=st.tracked[s.id]||{})[r.key]=e.target.checked;save();updRow(row,r,Math.min(r.count,owned(s)[r.key]|0),e.target.checked);compute()});
+$('#qgo').addEventListener('click',()=>{const s=cur(),o=owned(s);let n=0;for(const m of $('#quick').value.matchAll(/(\d+)\s*([A-Za-z]+)/g)){const r=s.rarities.find(x=>x.key.toLowerCase()===m[2].toLowerCase());if(r){o[r.key]=Math.min(r.count,+m[1]);n++}}save();renderRows();compute();$('#quick').value='';$('#quick').placeholder=n?`${n} rareté${n>1?'s':''} mise${n>1?'s':''} à jour`:'Rien reconnu : écris par ex. 32 C, 12 U'});
+$('#quick').addEventListener('keydown',e=>{if(e.key==='Enter')$('#qgo').click()});
+$('#qclr').addEventListener('click',()=>{st.owned[cur().id]={};save();renderRows();compute()});
+$('#edbody').addEventListener('change',e=>{const d=e.target.dataset;if(!d.e)return;const s=cur(),v=+e.target.value;
+  if(d.e==='cnt')s.rarities[+d.r].count=Math.max(0,v|0);else if(d.e==='hit'){const h=s.slots[+d.i].hits=s.slots[+d.i].hits||{};if(v>0)h[d.k]=v;else delete h[d.k]}else if(d.e==='fill')s.slots[+d.i].filler=e.target.value;else if(d.e==='n')s.slots[+d.i].n=Math.max(1,v|0);else if(d.e==='ppb'){if(v>0)s.packsPerBox=v}else if(d.e==='price')s.price=Math.max(0,v);
+  s.cardsPerPack=nPack(s);if(s.status==='vérifiée')s.status='modifiée';saveData();renderHead();renderRows();compute();renderInfo();if(d.e==='fill'||d.e==='n')renderEditor();else $('#sjson').value=JSON.stringify(s,null,1)});
+$('#edbody').addEventListener('click',e=>{const s=cur();if(e.target.id==='sapply'){try{const o=JSON.parse($('#sjson').value);if(!validSet(o))throw 0;const old=s.id,n=normSet(o);if(n.id!==old)data.sets=data.sets.filter(x=>x.id!==old);upsert(n);st.sel=n.id;save();all();$('#ed').open=true;msg('#emsg','Set mis à jour.')}catch(er){msg('#emsg','JSON invalide : il faut id, rarities [{key,count}], slots [{n,filler,hits}] et packsPerBox.',true)}}
+  if(e.target.id==='sdel'){data.sets=data.sets.filter(x=>x.id!==s.id);st.sel=data.sets[0].id;save();saveData();all()}});
+$('#exp').addEventListener('click',()=>{$('#io').value=JSON.stringify(data,null,1);msg('#iomsg','Toutes les données sont dans la zone de texte : copie-les pour les garder.')});
+$('#cpy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('#io').value);msg('#iomsg','Copié.')}catch(e){$('#io').select();msg('#iomsg','Copie refusée par le navigateur : le texte est sélectionné, fais Ctrl/Cmd + C.',true)}});
+$('#imp').addEventListener('click',()=>{try{const o=JSON.parse($('#io').value);if(o&&Array.isArray(o.sets)){const sets=o.sets.filter(validSet).map(normSet);if(!sets.length)throw 0;data={version:1,updated:o.updated||new Date().toISOString().slice(0,10),sets,common:o.common||DATA0.common};if(!data.sets.some(x=>x.id===st.sel))st.sel=data.sets[0].id;msg('#iomsg',`${sets.length} sets importés.`)}else if(validSet(o)){upsert(normSet(o));st.sel=o.id;msg('#iomsg',`Set ${o.id} importé.`)}else throw 0;saveData();save();all()}catch(e){msg('#iomsg','Import impossible : colle un JSON avec "sets": [...] ou un seul set valide.',true)}});
+$('#dup').addEventListener('click',()=>{const s=clone(cur());s.id=s.id+'-copie';s.name=s.name+' (copie)';s.status='modifiée';upsert(normSet(s));st.sel=s.id;save();all();$('#ed').open=true;msg('#iomsg','Copie créée : modifie-la dans « Modifier le set sélectionné ».')});
+$('#rst').addEventListener('click',()=>{LS.del('pkdup:data');data=clone(DATA0);if(!data.sets.some(x=>x.id===st.sel))st.sel='M6';save();all();msg('#iomsg','Données d\'origine rétablies (ta collection est conservée).')});
+$('#cprompt').addEventListener('click',async()=>{const p=`Tu tiens à jour les données de mon app « Doublons de booster » (boosters Pokémon japonais, série MEGA).
+Fais des recherches web (pokemon-card.com, Bulbapedia, altema.jp, premium.gamepedia.jp, yuyu-tei.jp, etc.) puis :
+1. ajoute tout set de la série MEGA sorti ou annoncé au Japon et absent de la liste (extensions, high class, spéciaux) ;
+2. corrige le nombre de cartes par rareté des sets dont "status" n'est pas "vérifiée" (et vérifie les autres) ;
+3. mets à jour les taux par boîte (封入率) dans "slots[].hits" si de meilleures données existent ;
+4. garde exactement le même schéma, ajoute les sources utilisées dans "sources", mets "status" à "vérifiée" seulement si la liste complète est publiée, et "updated" à la date du jour.
+Rends uniquement le JSON complet, sans commentaire.
+
+${JSON.stringify(data)}`;
+  try{await navigator.clipboard.writeText(p);msg('#pmsg','Consigne copiée avec tes données actuelles.')}catch(e){$('#io').value=p;msg('#pmsg','Copie refusée : la consigne est dans la zone de texte ci-dessous, copie-la à la main.',true)}});
+
+all();
+}
+</script>
+<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
+</body>
+</html>
