@@ -94,6 +94,20 @@ textarea{width:100%;min-height:140px;font:12.5px/1.4 ui-monospace,Menlo,monospac
 .mx input{width:4em;min-height:32px;padding:3px 6px;font-size:14px}
 .mx select{min-height:32px;font-size:13px;padding:3px 26px 3px 8px;background-position:right 8px center}
 .mx th,.mx td{vertical-align:top}
+.sim{border-top:1px solid var(--line);padding:22px 0 30px}
+.simhead{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
+.simhead h3{font-size:clamp(20px,2.4vw,24px);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:0 0 4px}
+.simin{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.simin input{width:4.6em;text-align:right;font-weight:700;font-size:18px;min-height:44px;-moz-appearance:textfield}
+.simin .pm{width:44px;min-height:44px;padding:0;font-size:18px;font-weight:500;background:var(--soft);border-color:transparent}
+.simin .ps{border-radius:99px;min-height:36px}
+.simin span{color:var(--mut);font-size:14px;margin-right:6px}
+.sf{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5em,1fr));gap:14px 22px;margin-bottom:16px}
+.sf .fv{font-size:clamp(26px,3.4vw,34px)}
+.sf .fl{min-height:0}
+#simt tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--line)}
+#simt td.dup{font-weight:700}
+#simt td.rg{color:var(--mut)}
 .bar{display:none}
 footer{color:var(--mut);font-size:13px;padding:20px 0 36px}
 @media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr);gap:24px}.card{position:static}.bar{display:flex;position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:8px max(4vw,16px);justify-content:space-between;gap:12px;font-size:13px;color:var(--mut)}.bar b{font-size:20px;color:var(--ink);font-weight:800;margin-left:4px;font-variant-numeric:tabular-nums}.bar .a b{color:var(--acc)}}
@@ -133,6 +147,21 @@ footer{color:var(--mut);font-size:13px;padding:20px 0 36px}
     </section>
   </div>
 
+  <section class="sim" id="simsec">
+    <div class="simhead">
+      <div><h3>Prédire une ouverture</h3><div class="sub">Doubles attendus par rareté, à partir de ta collection actuelle.</div></div>
+      <div class="simin"><button class="pm" data-n="-1" aria-label="Un booster de moins">−</button><input type="number" id="simn" min="1" max="2000" value="10" inputmode="numeric" aria-label="Nombre de boosters à ouvrir"><button class="pm" data-n="1" aria-label="Un booster de plus">+</button><span>boosters</span><button class="ps" data-p="10">10</button><button class="ps" data-p="box">1 boîte</button><button class="ps" data-p="box2">2 boîtes</button></div>
+    </div>
+    <div class="sf">
+      <div><div class="fl">Doubles attendus</div><div class="fv" id="sd">–</div><div class="sub" id="sds"></div></div>
+      <div><div class="fl">Nouvelles cartes</div><div class="fv a" id="sn">–</div><div class="sub" id="sns"></div></div>
+      <div><div class="fl">Coût au prix public</div><div class="fv" id="sc">–</div><div class="sub" id="scs"></div></div>
+      <div><div class="fl">Ensuite, paquet 100 % doublons</div><div class="fv" id="sp">–</div><div class="sub" id="sps"></div></div>
+    </div>
+    <div class="scroll"><table id="simt"><thead><tr><th>Rareté</th><th class="n">Tirées</th><th class="n">Doubles</th><th class="n">8 fois sur 10</th><th class="n">Nouvelles</th><th class="n">Après</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
+    <p class="cap" id="simcap" style="margin-top:8px"></p>
+  </section>
+
   <div class="more">
     <details><summary>Hypothèses et méthode</summary><div class="dbody">
       <ul id="hyp"></ul>
@@ -168,11 +197,25 @@ const comps=packComps(set);const R=T.length;const W=new Map();
 for(const{p,k}of comps){const j=new Array(R).fill(0);const rec=(r,w)=>{if(w===0)return;if(r===R){const key=j.join(',');W.set(key,(W.get(key)||0)+p*w);return}const mj=Math.min(k[r],U[r]);for(let x=0;x<=mj;x++){j[r]=x;let c=1;for(let i=0;i<x;i++)c=c*(k[r]-i)/(i+1);rec(r+1,w*(x%2?-1:1)*c*ratio(U[r],T[r],x))}j[r]=0};rec(0,1)}
 const terms=[];for(const[key,w]of W){const j=key.split(',').map(Number);let q=0;for(const{p,k}of comps){let t=p;for(let r=0;r<R&&t>0;r++)if(j[r])t*=ratio(T[r]-j[r],T[r],k[r]);q+=t}terms.push({w,q:Math.min(1,Math.max(0,q))})}
 const miss=T.map((t,r)=>{if(!t)return 1;let q=0;for(const{p,k}of comps)q+=p*(1-Math.min(1,k[r]/t));return q});
-return{T,O,U,comps,terms,miss}}
+const ek=T.map((_,r)=>comps.reduce((a,{p,k})=>a+p*k[r],0));
+return{T,O,U,comps,terms,miss,ek}}
 const fullDup=(pr,N)=>{let s=0;for(const{w,q}of pr.terms)s+=w*(q===1?1:Math.pow(q,N));return Math.min(1,Math.max(0,s))};
 function packsFor(pr,t){if(fullDup(pr,0)>=t)return 0;let lo=0,hi=1;while(fullDup(pr,hi)<t){lo=hi;hi*=2;if(hi>5e6)return Infinity}while(hi-lo>1){const m=(lo+hi)>>1;if(fullDup(pr,m)>=t)hi=m;else lo=m}return hi}
 const newCards=(pr,N)=>pr.U.reduce((a,u,r)=>a+u*(1-Math.pow(pr.miss[r],N)),0);
-return{prepare,fullDup,packsFor,newCards}})();
+// prévision exacte par rareté : cartes tirées, nouvelles, doubles (moyennes)
+const forecast=(pr,N)=>pr.T.map((t,r)=>{const pulled=N*pr.ek[r],fresh=pr.U[r]*(1-Math.pow(pr.miss[r],N));return{pulled,fresh,dup:Math.max(0,pulled-fresh)}});
+// simulation : fourchette (10e–90e centile) du nombre de doubles par rareté, dernière case = total
+function simulate(set,pr,N,sims){const keys=set.rarities.map(r=>r.key),idx=Object.fromEntries(keys.map((k,i)=>[k,i])),R=keys.length,slots=[];
+for(const slot of set.slots){const n=Math.max(1,slot.n|0);const outs=[];let sum=0;for(const[r,pb]of Object.entries(slot.hits||{})){if(!(r in idx))continue;const p=Math.max(0,+pb||0)/(set.packsPerBox*n);if(p>0){outs.push([idx[r],p]);sum+=p}}
+if(slot.filler in idx&&sum<1)outs.push([idx[slot.filler],1-sum]);else if(sum>0)outs.forEach(o=>o[1]/=sum);if(!outs.length)continue;let c=0;const cum=outs.map(([i,p])=>[i,c+=p]);for(let k=0;k<n;k++)slots.push(cum)}
+const res=Array.from({length:R+1},()=>new Float64Array(sims)),flags=pr.T.map(t=>new Uint8Array(t)),cnt=new Int32Array(R),d=new Int32Array(R),seen=[];
+for(let s=0;s<sims;s++){for(let r=0;r<R;r++){flags[r].fill(0);flags[r].fill(1,0,pr.O[r])}d.fill(0);
+for(let n=0;n<N;n++){cnt.fill(0);for(const cum of slots){const u=Math.random();let i=cum[cum.length-1][0];for(const[ri,c]of cum)if(u<c){i=ri;break}cnt[i]++}
+for(let r=0;r<R;r++){const T=pr.T[r],c=Math.min(cnt[r],T);if(!c)continue;const f=flags[r];seen.length=0;while(seen.length<c){const x=(Math.random()*T)|0;if(seen.includes(x))continue;seen.push(x);if(f[x])d[r]++;else f[x]=1}}}
+let tot=0;for(let r=0;r<R;r++){res[r][s]=d[r];tot+=d[r]}res[R][s]=tot}
+const q=(a,p)=>a[Math.min(a.length-1,Math.max(0,Math.round(p*(a.length-1))))];
+return res.map(a=>{a.sort();return{lo:q(a,0.1),hi:q(a,0.9)}})}
+return{prepare,fullDup,packsFor,newCards,forecast,simulate}})();
 
 /* ---------- données internes ---------- */
 const LAB={C:'Commune',U:'Peu commune',R:'Rare',RR:'Double rare (ex)',AR:'Art rare',SR:'Super rare',SAR:'Special art rare',MUR:'Méga ultra rare'};
@@ -182,9 +225,9 @@ const slots5=(sar,sr=1.8,rr=4)=>[{label:'Cartes 1–3',n:3,filler:'C',hits:{}},{
 const S={gp:{l:'gamepedia — taux types des extensions (C 3/paquet, U 1–2, R 7, RR 4, AR 3 par boîte)',u:'https://premium.gamepedia.jp/pokeca/archives/4360'},
 alt:{l:'altema — taux Méga Brave (MUR ~1/50 boîtes, SAR ~1/6, 2 SR, 3 AR, 4 RR par boîte)',u:'https://altema.jp/pokemoncard/megabrave'}};
 const base={cardsPerPack:5,packsPerBox:30,kind:'Extension'};
-const DATA0={version:1,updated:'2026-11-25',sets:[
-{...base,id:'M7',name:'Hadou Seeker',jp:'ハドウシーカー',release:'2026-11-27',price:200,status:'provisoire',rarities:std(36,26,8,8,12,16,6,1),slots:slots5(0.33),official:'https://www.pokemon-card.com/ex/m7/',
- note:'Liste complète non publiée au 25/11 : 78 cartes de base et une SAR n°113, donc 35 secrètes. Répartition par rareté estimée sur le modèle des sets précédents : à corriger à la sortie.',sources:[{l:'Page officielle M7',u:'https://www.pokemon-card.com/ex/m7/'},{l:'Cartes révélées (Samurai Sword Tokyo)',u:'https://samuraiswordtokyo.com/fr/pages/m7-card-list'}]},
+const DATA0={version:1,updated:'2026-11-27',sets:[
+{...base,id:'M7',name:'Hadou Seeker',jp:'ハドウシーカー',release:'2026-11-27',price:200,status:'partielle',rarities:std(43,21,6,8,12,16,6,1),slots:slots5(0.33),official:'https://www.pokemon-card.com/ex/m7/',
+ note:'Cartes 001–078 vérifiées sur la liste officielle (43 C, 21 U, 6 R, 8 RR). 35 secrètes (079–113) : 12 AR confirmées ; répartition SR / SAR / MUR estimée (16 / 6 / 1). Taux par boîte non publiés : repris des sets précédents.',sources:[{l:'Page officielle M7',u:'https://www.pokemon-card.com/ex/m7/'},{l:'Décompte de la liste officielle 001–078 (pokepa365)',u:'https://pokepa365.com/blog/hadouseeker-oripa/'},{l:'Nombre d\'AR (pokemon-infomation)',u:'https://pokemon-infomation.com/cardlist-hadou/'}]},
 {id:'M6a',name:'30th CELEBRATION',jp:'30th CELEBRATION',release:'2026-09-16',price:360,cardsPerPack:6,packsPerBox:20,kind:'Spéciale (30 ans)',status:'partielle',
  rarities:[{key:'PIKA',label:'Pikachu (30 illustrations)',count:30},{key:'NRG',label:'Énergie de base 30th',count:8,track:false},{key:'N',label:'Sans symbole (hors Pikachu)',count:63},{key:'RR',label:'Double rare (ex)',count:10},{key:'CLS',label:'Classic Collection (136–165)',count:30},{key:'AR',label:'Art rare',count:20},{key:'SAR',label:'Special art rare',count:10},{key:'FUR',label:'Futuristic rare',count:2}],
  slots:[{label:'Pikachu',n:1,filler:'PIKA',hits:{}},{label:'Énergie',n:1,filler:'NRG',hits:{}},{label:'Cartes 3–4',n:2,filler:'N',hits:{}},{label:'Carte 5',n:1,filler:'N',hits:{RR:5,CLS:2}},{label:'Carte 6',n:1,filler:'N',hits:{AR:4,SAR:0.9,FUR:0.1}}],
@@ -269,6 +312,7 @@ function compute(){
   for(const sl of s.slots){const n=Math.max(1,sl.n|0);const outs=[];let sum=0;for(const[r,pb]of Object.entries(sl.hits||{})){const i=keys.indexOf(r);if(i<0)continue;const p=Math.max(0,+pb||0)/(ppb*n);if(p>0){outs.push([i,p]);sum+=p}}const fi=keys.indexOf(sl.filler);if(fi>=0&&sum<1)outs.push([fi,1-sum]);else if(sum>0)outs.forEach(x=>x[1]/=sum);
     const pd=outs.reduce((a,[i,p])=>a+p*(T[i]?O[i]/T[i]:1),0);outs.sort((a,b)=>b[1]-a[1]);
     for(let k=0;k<n&&cards.length<12;k++)cards.push({pd,tip:`${sl.label} : `+outs.map(([i,p])=>`${keys[i]} ${pct(p)}`).join(', ')})}
+  queueMicrotask(forecast);
   $('#pack').innerHTML=cards.map((c,i)=>`<div title="${esc(c.tip)}"><i style="--h:${(c.pd*100).toFixed(1)}%"></i>${nf(c.pd*100,0)}%</div>`).join('');
 }
 function drawChart(){
@@ -287,6 +331,24 @@ function drawChart(){
 }
 const ro=new ResizeObserver(()=>drawChart());ro.observe($('#fig'));
 
+let simTimer=null,simRes=null,simKey='';
+const fm=x=>x<0.05?'≈ 0':nf(x,x<100?1:0);
+function forecast(){
+  const s=cur();if(!prep)return;
+  const N=Math.max(1,Math.min(2000,parseInt($('#simn').value,10)||1));st.simN=N;save();
+  const f=Engine.forecast(prep,N),t=tracked(s),tr=s.rarities.map(r=>t[r.key]);
+  const tp=f.reduce((a,x)=>a+x.pulled,0),tn=f.reduce((a,x)=>a+x.fresh,0),td=Math.max(0,tp-tn);
+  const T=prep.T,O=prep.O;let tt=0,to=0;T.forEach((x,i)=>{if(tr[i]){tt+=x;to+=O[i]}});
+  $('#sd').textContent=nf(td,1);$('#sds').textContent=`sur ${nf(tp,0)} cartes tirées (${nf(tp?td/tp*100:0,0)} %)`;
+  $('#sn').textContent=nf(tn,1);$('#sns').textContent=tt?`collection ${nf(to/tt*100,0)} % → ${nf((to+tn)/tt*100,0)} %`:'';
+  $('#sc').textContent=yen(N*s.price);$('#scs').textContent=boxes(N);
+  $('#sp').textContent=pct(Engine.fullDup(prep,N));$('#sps').textContent=`contre ${pct(Engine.fullDup(prep,0))} aujourd'hui`;
+  const key=s.id+'|'+N+'|'+O.join(',');const rg=i=>simRes&&simKey===key?(simRes[i].lo===simRes[i].hi?nf(simRes[i].lo,0):`${nf(simRes[i].lo,0)}–${nf(simRes[i].hi,0)}`):'…';
+  $('#simt tbody').innerHTML=s.rarities.map((r,i)=>`<tr><td><span class="k ${tier(r.key)}">${esc(r.key)}</span></td><td class="n">${fm(f[i].pulled)}</td><td class="n dup">${fm(f[i].dup)}</td><td class="n rg">${rg(i)}</td><td class="n">${tr[i]?fm(f[i].fresh):'—'}</td><td class="n">${tr[i]&&T[i]?nf((O[i]+f[i].fresh)/T[i]*100,0)+' %':'—'}</td></tr>`).join('');
+  $('#simt tfoot').innerHTML=`<tr><td>Total</td><td class="n">${fm(tp)}</td><td class="n">${fm(td)}</td><td class="n rg">${rg(T.length)}</td><td class="n">${fm(tn)}</td><td class="n">${tt?nf((to+tn)/tt*100,0)+' %':'—'}</td></tr>`;
+  if(simKey!==key){clearTimeout(simTimer);simTimer=setTimeout(()=>{const sims=Math.max(300,Math.min(3000,Math.floor(1.5e6/(N*nPack(s)))));simRes=Engine.simulate(s,prep,N,sims);simKey=key;
+    $('#simcap').textContent=`Tirées, doubles et nouvelles : moyennes exactes. « 8 fois sur 10 » : fourchette du nombre de doubles sur ${nf(sims,0)} ouvertures simulées. Un double = une carte que tu avais déjà, ou déjà sortie dans ce même lot.`;forecast()},150)}
+}
 function renderInfo(){
   const s=cur();
   const hyp=['Dans un paquet, une carte d\'une rareté donnée est tirée au hasard parmi les cartes de cette rareté, sans doublon à l\'intérieur du paquet.',
@@ -324,6 +386,9 @@ $('#rows').addEventListener('click',e=>{const b=e.target.closest('button');if(!b
 $('#rows').addEventListener('change',e=>{if(e.target.dataset.a!=='trk')return;const{row,s,r}=rowCtx(e.target);(st.tracked[s.id]=st.tracked[s.id]||{})[r.key]=e.target.checked;save();updRow(row,r,Math.min(r.count,owned(s)[r.key]|0),e.target.checked);compute()});
 $('#qgo').addEventListener('click',()=>{const s=cur(),o=owned(s);let n=0;for(const m of $('#quick').value.matchAll(/(\d+)\s*([A-Za-z]+)/g)){const r=s.rarities.find(x=>x.key.toLowerCase()===m[2].toLowerCase());if(r){o[r.key]=Math.min(r.count,+m[1]);n++}}save();renderRows();compute();$('#quick').value='';$('#quick').placeholder=n?`${n} rareté${n>1?'s':''} mise${n>1?'s':''} à jour`:'Rien reconnu : écris par ex. 32 C, 12 U'});
 $('#quick').addEventListener('keydown',e=>{if(e.key==='Enter')$('#qgo').click()});
+$('#simn').addEventListener('input',forecast);
+$('#simsec').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=$('#simn'),ppb=cur().packsPerBox;
+  if(b.dataset.n)i.value=Math.max(1,Math.min(2000,(parseInt(i.value,10)||0)+(+b.dataset.n)));else if(b.dataset.p)i.value=b.dataset.p==='box'?ppb:b.dataset.p==='box2'?2*ppb:+b.dataset.p;forecast()});
 $('#qclr').addEventListener('click',()=>{st.owned[cur().id]={};save();renderRows();compute()});
 $('#edbody').addEventListener('change',e=>{const d=e.target.dataset;if(!d.e)return;const s=cur(),v=+e.target.value;
   if(d.e==='cnt')s.rarities[+d.r].count=Math.max(0,v|0);else if(d.e==='hit'){const h=s.slots[+d.i].hits=s.slots[+d.i].hits||{};if(v>0)h[d.k]=v;else delete h[d.k]}else if(d.e==='fill')s.slots[+d.i].filler=e.target.value;else if(d.e==='n')s.slots[+d.i].n=Math.max(1,v|0);else if(d.e==='ppb'){if(v>0)s.packsPerBox=v}else if(d.e==='price')s.price=Math.max(0,v);
@@ -346,6 +411,7 @@ Rends uniquement le JSON complet, sans commentaire.
 ${JSON.stringify(data)}`;
   try{await navigator.clipboard.writeText(p);msg('#pmsg','Consigne copiée avec tes données actuelles.')}catch(e){$('#io').value=p;msg('#pmsg','Copie refusée : la consigne est dans la zone de texte ci-dessous, copie-la à la main.',true)}});
 
+$('#simn').value=st.simN||10;
 all();
 }
 </script>
