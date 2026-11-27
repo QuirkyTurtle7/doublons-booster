@@ -108,6 +108,26 @@ textarea{width:100%;min-height:140px;font:12.5px/1.4 ui-monospace,Menlo,monospac
 #simt tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--line)}
 #simt td.dup{font-weight:700}
 #simt td.rg{color:var(--mut)}
+.vd{border-radius:12px;padding:14px 16px;background:var(--accs);margin-bottom:18px}
+.vd.stop{background:light-dark(#fdeae5,#3a1d17)}
+.vt{font-size:clamp(22px,2.6vw,26px);font-weight:800;letter-spacing:-.02em;color:var(--acc);line-height:1.15}
+.vd.stop .vt{color:light-dark(#c4320a,#ff8a65)}
+.vd .sub{color:var(--ink);opacity:.8;margin-top:6px}
+.vd .lnk{margin-top:6px;font-size:13px}
+.rules{border-top:1px solid var(--line);padding:22px 0 26px}
+.rr{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:2px 12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}
+.rr>input[type=checkbox]{width:18px;height:18px;margin:6px 0 0;accent-color:var(--acc);cursor:pointer}
+.rr .lab{font-size:15px;line-height:2}
+.rr .lab input{width:3.4em;min-height:32px;padding:2px 6px;text-align:right;font-weight:700;-moz-appearance:textfield}
+.rr .now{font-size:13px;color:var(--mut);line-height:1.4}
+.nw{white-space:nowrap}
+.stt{font-size:14px;font-weight:600;white-space:nowrap;text-align:right;padding-top:5px}
+.stt.hit{color:light-dark(#c4320a,#ff8a65)}
+.stt.na{color:var(--mut);font-weight:400}
+.rr.bind .stt{color:var(--acc)}
+.rr.off .lab,.rr.off .now{opacity:.45}
+.bar .s b{color:light-dark(#c4320a,#ff8a65)}
+@media(max-width:600px){.rr{grid-template-columns:22px minmax(0,1fr)}.stt{grid-column:2;text-align:left;padding-top:2px}}
 .bar{display:none}
 footer{color:var(--mut);font-size:13px;padding:20px 0 36px}
 @media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr);gap:24px}.card{position:static}.bar{display:flex;position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:8px max(4vw,16px);justify-content:space-between;gap:12px;font-size:13px;color:var(--mut)}.bar b{font-size:20px;color:var(--ink);font-weight:800;margin-left:4px;font-variant-numeric:tabular-nums}.bar .a b{color:var(--acc)}}
@@ -135,6 +155,7 @@ footer{color:var(--mut);font-size:13px;padding:20px 0 36px}
     </section>
 
     <section class="card" aria-live="polite">
+      <div class="vd" id="vd"><div class="vt" id="vt">–</div><div class="sub" id="vs"></div><button class="lnk" id="golink">Voir mes règles d'achat</button></div>
       <div class="figs">
         <div><div class="fl">Prochain paquet 100 % doublons</div><div class="fv" id="p0">–</div><div class="sub" id="p0s"></div></div>
         <div><div class="fl">Paquets à ouvrir d'un coup pour 50 %</div><div class="fv a" id="n50">–</div><div class="sub" id="n50s"></div></div>
@@ -146,6 +167,12 @@ footer{color:var(--mut);font-size:13px;padding:20px 0 36px}
       <div class="pc" id="pack"></div>
     </section>
   </div>
+
+  <section class="rules" id="rules">
+    <div class="simhead"><div><h3>Tes règles d'achat</h3><div class="sub">Tu peux continuer tant qu'aucune règle n'est atteinte. Une seule suffit pour t'arrêter.</div></div></div>
+    <div id="rlist"></div>
+    <p class="cap" style="margin-top:8px">« Dans N paquets » : d'après l'évolution moyenne de ta collection. La règle SAR ne compte qu'une fois la SAR obtenue, la chance ne se planifie pas ; une MUR ou une FUR compte comme une SAR. Une rareté décochée dans ta collection est ignorée dans les conditions.</p>
+  </section>
 
   <section class="sim" id="simsec">
     <div class="simhead">
@@ -195,7 +222,7 @@ return[...dist].map(([k,p])=>({p,k:k.split(',').map(Number)}))}
 function prepare(set,owned,tracked){const T=set.rarities.map(r=>Math.max(0,r.count|0));const O=set.rarities.map((r,i)=>tracked[r.key]===false?T[i]:Math.min(T[i],Math.max(0,owned[r.key]|0)));const U=T.map((t,i)=>t-O[i]);
 const comps=packComps(set);const R=T.length;const W=new Map();
 for(const{p,k}of comps){const j=new Array(R).fill(0);const rec=(r,w)=>{if(w===0)return;if(r===R){const key=j.join(',');W.set(key,(W.get(key)||0)+p*w);return}const mj=Math.min(k[r],U[r]);for(let x=0;x<=mj;x++){j[r]=x;let c=1;for(let i=0;i<x;i++)c=c*(k[r]-i)/(i+1);rec(r+1,w*(x%2?-1:1)*c*ratio(U[r],T[r],x))}j[r]=0};rec(0,1)}
-const terms=[];for(const[key,w]of W){const j=key.split(',').map(Number);let q=0;for(const{p,k}of comps){let t=p;for(let r=0;r<R&&t>0;r++)if(j[r])t*=ratio(T[r]-j[r],T[r],k[r]);q+=t}terms.push({w,q:Math.min(1,Math.max(0,q))})}
+const terms=[];for(const[key,w]of W){const j=key.split(',').map(Number);let q=0;for(const{p,k}of comps){let t=p;for(let r=0;r<R&&t>0;r++)if(j[r])t*=ratio(T[r]-j[r],T[r],k[r]);q+=t}terms.push({w,q:Math.min(1,Math.max(0,q)),s:j.reduce((a,b)=>a+b,0)})}
 const miss=T.map((t,r)=>{if(!t)return 1;let q=0;for(const{p,k}of comps)q+=p*(1-Math.min(1,k[r]/t));return q});
 const ek=T.map((_,r)=>comps.reduce((a,{p,k})=>a+p*k[r],0));
 return{T,O,U,comps,terms,miss,ek}}
@@ -215,7 +242,11 @@ for(let r=0;r<R;r++){const T=pr.T[r],c=Math.min(cnt[r],T);if(!c)continue;const f
 let tot=0;for(let r=0;r<R;r++){res[r][s]=d[r];tot+=d[r]}res[R][s]=tot}
 const q=(a,p)=>a[Math.min(a.length-1,Math.max(0,Math.round(p*(a.length-1))))];
 return res.map(a=>{a.sort();return{lo:q(a,0.1),hi:q(a,0.9)}})}
-return{prepare,fullDup,packsFor,newCards,forecast,simulate}})();
+// chance que le paquet suivant (après N paquets ouverts) contienne au plus M cartes nouvelles
+const pNewAtMost=(pr,N,M)=>{let s=0;for(const t of pr.terms){let c=0,b=1;for(let m=0;m<=M&&m<=t.s;m++){c+=(m%2?-1:1)*b;b=b*(t.s-m)/(m+1)}s+=t.w*c*(t.q===1?1:Math.pow(t.q,N))}return Math.min(1,Math.max(0,s))};
+// cartes possédées attendues par rareté après N paquets
+const expOwned=(pr,N)=>pr.T.map((t,r)=>pr.O[r]+pr.U[r]*(1-Math.pow(pr.miss[r],N)));
+return{prepare,fullDup,packsFor,newCards,forecast,simulate,pNewAtMost,expOwned}})();
 
 /* ---------- données internes ---------- */
 const LAB={C:'Commune',U:'Peu commune',R:'Rare',RR:'Double rare (ex)',AR:'Art rare',SR:'Super rare',SAR:'Special art rare',MUR:'Méga ultra rare'};
@@ -253,6 +284,8 @@ const clone=o=>JSON.parse(JSON.stringify(o));
 let data=LS.get('pkdup:data')||clone(DATA0);
 let st=LS.get('pkdup:state')||{sel:'M6',owned:{M6:{C:32,U:12,R:2,RR:3}},tracked:{}};
 st.owned=st.owned||{};st.tracked=st.tracked||{};
+const RULES0={r1:{on:true},r2:{on:true},r3:{on:true,c:80,u:65},r4:{on:true,c:70,u:55},r5:{on:true,ar:25,c:70,u:55},r6:{on:true,m:1,p:50}};
+st.rules=st.rules||{};for(const k in RULES0)st.rules[k]=Object.assign({},RULES0[k],st.rules[k]||{});
 const save=()=>LS.set('pkdup:state',st);
 const saveData=()=>LS.set('pkdup:data',data);
 const $=s=>document.querySelector(s);
@@ -299,7 +332,6 @@ function compute(){
   const nTxt=n50===0?'0':isFinite(n50)?nf(n50,0):'∞';
   $('#n50').textContent=nTxt;
   $('#n50s').textContent=n50===0?'50 % déjà atteint':isFinite(n50)?`${boxes(n50)} · ${yen(n50*s.price)} · +${nf(Engine.newCards(prep,n50),0)} cartes`:'Non atteignable avec ces données';
-  $('#bar').innerHTML=`<span>Maintenant<b>${esc(pct(p0))}</b></span><span class="a">50 % après<b>${esc(nTxt)}</b> paquets</span>`;
   const nMax=Math.max(10,Math.min(isFinite(n90)?Math.ceil(n90*1.1):(isFinite(n50)?n50*3:300),5e6));
   const pts=[];for(let i=0;i<=140;i++){const n=Math.round(nMax*i/140);pts.push([n,Engine.fullDup(prep,n)])}
   curve={pts,nMax,n50};drawChart();
@@ -312,7 +344,7 @@ function compute(){
   for(const sl of s.slots){const n=Math.max(1,sl.n|0);const outs=[];let sum=0;for(const[r,pb]of Object.entries(sl.hits||{})){const i=keys.indexOf(r);if(i<0)continue;const p=Math.max(0,+pb||0)/(ppb*n);if(p>0){outs.push([i,p]);sum+=p}}const fi=keys.indexOf(sl.filler);if(fi>=0&&sum<1)outs.push([fi,1-sum]);else if(sum>0)outs.forEach(x=>x[1]/=sum);
     const pd=outs.reduce((a,[i,p])=>a+p*(T[i]?O[i]/T[i]:1),0);outs.sort((a,b)=>b[1]-a[1]);
     for(let k=0;k<n&&cards.length<12;k++)cards.push({pd,tip:`${sl.label} : `+outs.map(([i,p])=>`${keys[i]} ${pct(p)}`).join(', ')})}
-  queueMicrotask(forecast);
+  queueMicrotask(forecast);queueMicrotask(()=>{if($('#rlist').children.length)updRules()});
   $('#pack').innerHTML=cards.map((c,i)=>`<div title="${esc(c.tip)}"><i style="--h:${(c.pd*100).toFixed(1)}%"></i>${nf(c.pd*100,0)}%</div>`).join('');
 }
 function drawChart(){
@@ -349,6 +381,62 @@ function forecast(){
   if(simKey!==key){clearTimeout(simTimer);simTimer=setTimeout(()=>{const sims=Math.max(300,Math.min(3000,Math.floor(1.5e6/(N*nPack(s)))));simRes=Engine.simulate(s,prep,N,sims);simKey=key;
     $('#simcap').textContent=`Tirées, doubles et nouvelles : moyennes exactes. « 8 fois sur 10 » : fourchette du nombre de doubles sur ${nf(sims,0)} ouvertures simulées. Un double = une carte que tu avais déjà, ou déjà sortie dans ce même lot.`;forecast()},150)}
 }
+function rctx(){const s=cur(),keys=s.rarities.map(r=>r.key),t=tracked(s),ix=k=>keys.indexOf(k);
+  const cI=ix('C')>=0?ix('C'):ix('N'),uI=ix('U'),arI=ix('AR'),sarI=['SAR','MUR','FUR'].map(ix).filter(i=>i>=0);
+  const ok=i=>i>=0&&t[keys[i]]!==false&&prep.T[i]>0;
+  return{s,keys,cI,uI,arI,sarI,ok,n:nPack(s),cN:cI>=0?keys[cI]:'C'}}
+function rstate(x,N){const own=Engine.expOwned(prep,N);return{own,pc:i=>own[i]/prep.T[i]*100,sar:x.sarI.some(i=>x.ok(i)&&prep.O[i]>0),p6:()=>Engine.pNewAtMost(prep,N,st.rules.r6.m)*100}}
+const conds=(x,S,c,u)=>[x.ok(x.cI)?S.pc(x.cI)>=c-1e-9:null,x.ok(x.uI)?S.pc(x.uI)>=u-1e-9:null].filter(v=>v!==null);
+const RULES=[
+  {id:'r1',app:x=>x.ok(x.cI),hit:(x,S)=>S.own[x.cI]>=prep.T[x.cI]-0.5},
+  {id:'r2',app:x=>x.ok(x.uI),hit:(x,S)=>S.own[x.uI]>=prep.T[x.uI]-0.5},
+  {id:'r3',app:x=>x.ok(x.cI)||x.ok(x.uI),hit:(x,S)=>conds(x,S,st.rules.r3.c,st.rules.r3.u).every(Boolean)},
+  {id:'r4',app:x=>x.sarI.some(x.ok),hit:(x,S)=>S.sar&&conds(x,S,st.rules.r4.c,st.rules.r4.u).every(Boolean)},
+  {id:'r5',app:x=>x.ok(x.arI),hit:(x,S)=>S.pc(x.arI)>=st.rules.r5.ar-1e-9&&conds(x,S,st.rules.r5.c,st.rules.r5.u).every(Boolean)},
+  {id:'r6',app:x=>true,hit:(x,S)=>S.p6()>=st.rules.r6.p-1e-9}];
+function reachN(R,x){const f=N=>R.hit(x,rstate(x,N));if(f(0))return 0;if(!f(2000))return Infinity;let lo=0,hi=1;while(!f(hi)){lo=hi;hi*=2}while(hi-lo>1){const m=(lo+hi)>>1;if(f(m))hi=m;else lo=m}return hi}
+function renderRules(){const x=rctx(),R=st.rules,n=x.n,c=esc(x.cN);
+  const inp=(id,f,v,max)=>`<input type="number" min="${f==='d'?1:0}" max="${max||100}" data-r="${id}" data-f="${f}" value="${+v}" inputmode="numeric" aria-label="seuil">`;
+  const g=(lab,id,f)=>`<span class="nw">${lab} ≥ ${inp(id,f,R[id][f])} %</span>`;
+  const uP=id=>x.uI>=0?` et ${g('U',id,'u')}`:'';
+  const L={r1:`J'ai toutes les ${c}`,r2:`J'ai toutes les U`,r3:`${g(c,'r3','c')}${uP('r3')}`,
+    r4:`Une SAR (ou plus rare), ${g(c,'r4','c')}${uP('r4')}`,
+    r5:`${g('AR','r5','ar')}, ${g(c,'r5','c')}${uP('r5')}`,
+    r6:`Paquet avec <span class="nw">${inp('r6','d',Math.max(1,n-R.r6.m),n)} doubles ou +</span> sur ${n} : <span class="nw">chance ≥ ${inp('r6','p',R.r6.p)} %</span>`};
+  $('#rlist').innerHTML=RULES.map(r=>`<div class="rr" id="rr-${r.id}"><input type="checkbox" data-r="${r.id}" data-f="on"${R[r.id].on?' checked':''} aria-label="Activer cette règle"><div><div class="lab">${L[r.id]}</div><div class="now"></div></div><div class="stt"></div></div>`).join('');
+  updRules()}
+function updRules(){const x=rctx(),R=st.rules,S0=rstate(x,0),res={};
+  const pcS=i=>x.ok(i)?`${x.keys[i]} ${nf(S0.pc(i),0)} %`:null;
+  for(const r of RULES){const el=$('#rr-'+r.id);if(!el)continue;const on=R[r.id].on,app=r.app(x);
+    const N=on&&app?(r.id==='r4'&&!S0.sar?Infinity:reachN(r,x)):null;res[r.id]={on,app,N};
+    let now='';
+    if(r.id==='r1')now=x.ok(x.cI)?`${prep.O[x.cI]} / ${prep.T[x.cI]}`:'';
+    else if(r.id==='r2')now=x.ok(x.uI)?`${prep.O[x.uI]} / ${prep.T[x.uI]}`:'';
+    else if(r.id==='r3')now=[pcS(x.cI),pcS(x.uI)].filter(Boolean).join(' · ');
+    else if(r.id==='r4')now=[`SAR : ${S0.sar?'oui':'pas encore'}`,pcS(x.cI),pcS(x.uI)].filter(Boolean).join(' · ');
+    else if(r.id==='r5')now=x.ok(x.arI)?[`AR ${prep.O[x.arI]} / ${prep.T[x.arI]} (${nf(S0.pc(x.arI),0)} %)`,pcS(x.cI),pcS(x.uI)].filter(Boolean).join(' · '):'';
+    else now=pct(S0.p6()/100);
+    el.querySelector('.now').textContent=app?'Maintenant : '+now:'Ne s\'applique pas à ce set';
+    const stt=el.querySelector('.stt');stt.className='stt';
+    if(!on){stt.textContent='Désactivée';stt.classList.add('na')}
+    else if(!app){stt.textContent='—';stt.classList.add('na')}
+    else if(N===0){stt.textContent='Atteinte';stt.classList.add('hit')}
+    else if(!isFinite(N)){stt.textContent=r.id==='r4'?'Si tu tires une SAR':'Hors de portée';stt.classList.add('na')}
+    else stt.textContent=`Dans ${nf(N,0)} paquet${N>1?'s':''}`;
+    el.classList.toggle('off',!on)}
+  const act=Object.entries(res).filter(([k,v])=>v.on&&v.app),K=act.length?Math.min(...act.map(([k,v])=>v.N)):Infinity;
+  const bind=isFinite(K)?act.filter(([k,v])=>v.N===K).map(([k])=>k):[];
+  RULES.forEach(r=>{const el=$('#rr-'+r.id);if(el)el.classList.toggle('bind',bind.includes(r.id)&&K>0)});
+  const uN=id=>x.uI>=0?` et U ${R[id].u} %`:'';
+  const name=k=>({r1:`toutes les ${x.cN}`,r2:'toutes les U',r3:`${x.cN} ${R.r3.c} %${uN('r3')}`,r4:`SAR + ${x.cN} ${R.r4.c} %${uN('r4')}`,r5:`AR ${R.r5.ar} % + ${x.cN} ${R.r5.c} %${uN('r5')}`,r6:`${x.n-R.r6.m} doubles ou + à ${R.r6.p} %`})[k];
+  let vt,vs;
+  if(!act.length){vt='Aucune règle active';vs='Active au moins une règle d\'achat.'}
+  else if(K===0){vt='Stop, n\'achète plus';vs='Règle atteinte : '+bind.map(name).join(', ')+'.'}
+  else if(!isFinite(K)){vt='Pas de limite';vs='Aucune règle active ne sera atteinte avec ces réglages.'}
+  else{vt=`Encore ${nf(K,0)} paquet${K>1?'s':''} maximum`;vs=`Soit ${boxes(K)}. Ensuite, la règle « ${bind.map(name).join(' » et « ')} » sera atteinte, en moyenne.`}
+  $('#vd').className='vd'+(K===0&&act.length?' stop':'');$('#vt').textContent=vt;$('#vs').textContent=vs;
+  $('#bar').innerHTML=`<span class="${K===0?'s':'a'}"><b>${esc(K===0&&act.length?'Stop':isFinite(K)?`Encore ${nf(K,0)} max`:'Pas de limite')}</b></span><span>100 % doublons<b>${esc(pct(Engine.fullDup(prep,0)))}</b></span>`;
+}
 function renderInfo(){
   const s=cur();
   const hyp=['Dans un paquet, une carte d\'une rareté donnée est tirée au hasard parmi les cartes de cette rareté, sans doublon à l\'intérieur du paquet.',
@@ -375,7 +463,7 @@ function renderEditor(){
   <div class="scroll mx"><table><thead><tr><th>Rareté</th><th class="n">Cartes</th>${head}</tr></thead><tbody>${body}</tbody></table></div>
   <p style="margin-top:16px">JSON du set (pour ajouter une rareté ou un emplacement) :</p><textarea id="sjson" spellcheck="false">${esc(JSON.stringify(s,null,1))}</textarea><div class="btns"><button id="sapply">Appliquer ce JSON</button>${DATA0.sets.some(x=>x.id===s.id)?'':'<button id="sdel">Supprimer ce set</button>'}</div><p class="msg" id="emsg"></p>`;
 }
-function all(){renderHead();renderRows();compute();renderInfo();renderEditor()}
+function all(){renderHead();renderRows();compute();renderRules();renderInfo();renderEditor()}
 const msg=(id,t,err)=>{const e=$(id);e.textContent=t;e.classList.toggle('err',!!err)};
 
 /* ---------- événements ---------- */
@@ -387,6 +475,10 @@ $('#rows').addEventListener('change',e=>{if(e.target.dataset.a!=='trk')return;co
 $('#qgo').addEventListener('click',()=>{const s=cur(),o=owned(s);let n=0;for(const m of $('#quick').value.matchAll(/(\d+)\s*([A-Za-z]+)/g)){const r=s.rarities.find(x=>x.key.toLowerCase()===m[2].toLowerCase());if(r){o[r.key]=Math.min(r.count,+m[1]);n++}}save();renderRows();compute();$('#quick').value='';$('#quick').placeholder=n?`${n} rareté${n>1?'s':''} mise${n>1?'s':''} à jour`:'Rien reconnu : écris par ex. 32 C, 12 U'});
 $('#quick').addEventListener('keydown',e=>{if(e.key==='Enter')$('#qgo').click()});
 $('#simn').addEventListener('input',forecast);
+$('#rlist').addEventListener('input',e=>{const d=e.target.dataset;if(!d.r||d.f==='on')return;const R=st.rules[d.r],n=nPack(cur());let v=parseInt(e.target.value,10);if(!Number.isFinite(v))return;
+  if(d.f==='d'){v=Math.max(1,Math.min(n,v));R.m=n-v}else R[d.f]=Math.max(0,Math.min(100,v));save();updRules()});
+$('#rlist').addEventListener('change',e=>{const d=e.target.dataset;if(d.f!=='on')return;st.rules[d.r].on=e.target.checked;save();updRules()});
+$('#golink').addEventListener('click',()=>$('#rules').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}));
 $('#simsec').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=$('#simn'),ppb=cur().packsPerBox;
   if(b.dataset.n)i.value=Math.max(1,Math.min(2000,(parseInt(i.value,10)||0)+(+b.dataset.n)));else if(b.dataset.p)i.value=b.dataset.p==='box'?ppb:b.dataset.p==='box2'?2*ppb:+b.dataset.p;forecast()});
 $('#qclr').addEventListener('click',()=>{st.owned[cur().id]={};save();renderRows();compute()});
