@@ -14,3 +14,7 @@ Ouvrir la page dans Chrome, puis menu ⋮ → « Installer l'application ». L'a
 ## Mettre à jour
 
 Modifier `index.html`, puis changer `VERSION` dans `sw.js` pour forcer le rafraîchissement du cache.
+
+## Sauvegarde
+
+Le bouton « Sauvegarder » de l'app enregistre la collection, les règles et les images dans `sauvegarde.json`, sur la branche `sauvegarde` de ce dépôt (via l'API GitHub et un jeton personnel stocké uniquement sur l'appareil). La branche `main` contient seulement l'app.

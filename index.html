@@ -7,7 +7,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#101114" media="(prefers-color-scheme: dark)">
-<meta name="description" content="Chance qu'un booster Pokémon japonais de la série MEGA ne contienne que des doublons, et nombre de paquets à ouvrir pour atteindre 50 %.">
+<meta name="description" content="Boosters Pokémon japonais de la série MEGA : doublons, prédictions et règles d'achat.">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -15,201 +15,235 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* VOICE quiet everyday tool, nothing shouts except the two answers
-   IDEA a collector's checklist: one ruled line per rarity that fills as the binder fills
-   PICTURE the result card (two figures + a thin curve) pinned beside the checklist
-   COLOUR white ground, near-black ink, one blue accent, greys for everything else
-   TYPE Figtree only, weights do the work
-   LAYOUT laptop: checklist left, result card sticky right; phone: slim sticky summary, checklist, then card */
-:root{color-scheme:light dark;--bg:light-dark(#ffffff,#101114);--ink:light-dark(#16181d,#eceef2);--mut:light-dark(#6b7080,#9aa0ad);--line:light-dark(#e8e9ee,#2a2d34);--soft:light-dark(#f6f7f9,#181a1f);--acc:light-dark(#2f5bd3,#7c9dff);--accs:light-dark(#e9eefc,#1d2640);--warn:light-dark(#9a6700,#e3b341)}
+/* VOICE quiet collector's tool: one answer per screen, nothing decorative
+   IDEA a shelf of booster packs; open one to see your checklist and the verdict
+   PICTURE the packs themselves (photo or coloured stand-in) on the home shelf; the verdict box on each set
+   COLOUR white ground, near-black ink, one blue accent, red only for "stop"
+   TYPE Figtree only
+   LAYOUT home: grid of packs; set: verdict + checklist + prediction, rules and data folded away */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#101114);--ink:light-dark(#16181d,#eceef2);--mut:light-dark(#6b7080,#9aa0ad);--line:light-dark(#e8e9ee,#2a2d34);--soft:light-dark(#f4f5f8,#191b20);--acc:light-dark(#2f5bd3,#7c9dff);--accs:light-dark(#eaf0fd,#1b2440);--red:light-dark(#c4320a,#ff8a65);--reds:light-dark(#fdece7,#3a1d17);--warn:light-dark(#9a6700,#e3b341)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:15px/1.5 Figtree,system-ui,"Hiragino Sans","Noto Sans JP",sans-serif;overflow-x:clip}
-.wrap{max-width:1080px;margin:0 auto;padding:0 max(4vw,16px)}
-header{padding:28px 0 18px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
-h1{font-size:clamp(24px,3vw,30px);font-weight:800;letter-spacing:-.02em;line-height:1.1;margin:0}
-.meta{color:var(--mut);font-size:14px;margin-top:6px}
-.tag{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:99px;background:var(--soft);color:var(--warn);font-weight:600;font-size:13px}
+[hidden]{display:none!important}
+.wrap{max-width:1080px;margin:0 auto;padding:0 max(4vw,16px) 40px}
+a{color:var(--acc)}
 select,input,textarea,button{font:inherit;color:inherit}
-select{appearance:none;min-height:42px;padding:8px 36px 8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.8' fill='none'/%3E%3C/svg%3E") no-repeat right 12px center;font-weight:600;max-width:100%}
-input[type=number],input[type=text],textarea{font-size:16px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px;min-height:36px}
-button{cursor:pointer;border:1px solid var(--line);background:var(--bg);border-radius:8px;min-height:36px;padding:4px 12px;font-weight:600;font-size:14px}
-button:hover,select:hover{border-color:var(--mut)}
+input[type=number],input[type=text],input[type=url],input[type=password],textarea{font-size:16px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 10px;min-height:40px}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+button,.btn{cursor:pointer;border:1px solid var(--line);background:var(--bg);border-radius:8px;min-height:38px;padding:4px 12px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px}
+button:hover,.btn:hover{border-color:var(--mut)}
 button.pri{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 button.lnk{border:0;background:none;padding:0 2px;min-height:0;font-weight:500;color:var(--mut);text-decoration:underline;text-underline-offset:3px}
 :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-a{color:var(--acc)}
-.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:40px;align-items:start;padding-bottom:24px;border-top:1px solid var(--line);padding-top:20px}
-h2{font-size:13px;font-weight:600;color:var(--mut);margin:0 0 10px;letter-spacing:0}
-.quick{display:flex;gap:8px;margin-bottom:8px}
-.quick input{flex:1}
-.row{display:grid;grid-template-columns:2.9em minmax(0,1fr) auto 22px;gap:10px;align-items:center;padding:7px 0;position:relative}
+.appbar{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;min-height:56px;padding-block:6px;padding-inline:max(4vw,16px,calc((100% - 1080px)/2 + max(4vw,16px)))}
+.appbar .ttl{font-weight:800;font-size:19px;letter-spacing:-.01em;flex:1}
+.back{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;font-size:28px;line-height:1;text-decoration:none;color:var(--ink);margin-left:-10px;flex:none}
+.ttl2{flex:1;display:flex;flex-direction:column;line-height:1.25}
+.ttl2 b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vmini{font-size:13px;font-weight:600;color:var(--acc)}
+.vmini.stop{color:var(--red)}
+.savebtn{border-radius:99px;min-height:36px;padding:4px 14px;font-weight:700;flex:none}
+.savebtn.dirty{background:var(--acc);color:#fff;border-color:var(--acc)}
+.savebtn.clean{color:var(--mut);border-color:transparent;background:none;font-weight:500}
+.savebtn.err{border-color:var(--red);color:var(--red)}
+.ib{font-size:14px;color:var(--mut);text-decoration:none;padding:8px 2px;flex:none}
+.notice{max-width:1080px;margin:12px auto 0;padding:0 max(4vw,16px)}
+.notice>div{background:var(--accs);border-radius:12px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:14px}
+.notice span{flex:1 1 220px}
+/* accueil */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:24px 16px;padding:22px 0 8px}
+.tile{display:block;text-decoration:none;color:inherit}
+.art{aspect-ratio:5/8;border-radius:12px;overflow:hidden;position:relative;background:var(--soft)}
+.art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ph{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;color:#fff;background:radial-gradient(120% 70% at 80% 10%,rgba(255,255,255,.28),transparent 60%),linear-gradient(165deg,var(--c),color-mix(in srgb,var(--c) 50%,#000))}
+.ph b{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.ph span{font-size:12px;opacity:.9;margin-top:4px}
+.tile:hover .art{outline:2px solid var(--acc);outline-offset:2px}
+.tn{font-weight:700;font-size:15px;margin-top:8px;line-height:1.25}
+.tv{font-size:13px;font-weight:600;color:var(--acc)}
+.tv.stop{color:var(--red)}.tv.na{color:var(--mut);font-weight:500}
+.foot{color:var(--mut);font-size:13px;margin-top:20px}
+/* page d'un set */
+.shead{display:flex;gap:14px;align-items:center;padding:18px 0 4px}
+.pk{width:58px;flex:none;padding:0;border:0;background:none;min-height:0;display:block;border-radius:8px}
+.pk .art{border-radius:8px}.pk .ph{padding:6px}.pk .ph b{font-size:14px}.pk .ph span{display:none}
+h1{font-size:clamp(22px,3vw,28px);font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.15}
+.meta{color:var(--mut);font-size:13px;margin-top:4px}
+.tag{display:inline-block;margin-left:6px;padding:0 8px;border-radius:99px;background:var(--soft);color:var(--warn);font-weight:600}
+.imgp{background:var(--soft);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px}
+.imgp p{margin:0 0 8px;color:var(--mut)}
+.row2{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.row2 input{flex:1 1 180px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"coll vbox" "coll pred";gap:24px 44px;align-items:start;padding-top:18px}
+.coll{grid-area:coll}.vbox{grid-area:vbox}.pred{grid-area:pred}
+h2{font-size:13px;font-weight:600;color:var(--mut);margin:0 0 8px}
+.vd{border-radius:14px;padding:16px 18px;background:var(--accs)}
+.vd.stop{background:var(--reds)}
+.vt{font-size:clamp(22px,2.6vw,26px);font-weight:800;color:var(--acc);letter-spacing:-.02em;line-height:1.15}
+.vd.stop .vt{color:var(--red)}
+.vs{font-size:14px;margin-top:6px;opacity:.85}
+.stats{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:14px}
+.stats b{display:block;font-size:26px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+.stats span{font-size:13px;color:var(--mut);line-height:1.3;display:block;margin-top:2px}
+.quick{display:flex;gap:8px;margin-bottom:6px}.quick input{flex:1}
+.row{display:grid;grid-template-columns:2.9em minmax(0,1fr) auto 22px;gap:10px;align-items:center;padding:6px 0;position:relative}
 .row::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(var(--acc),var(--acc)) 0 0/var(--w,0%) 100% no-repeat,var(--line);transition:background-size .3s}
 .row.off{opacity:.45}
 .k{font-weight:800;font-size:13px}
-.t1{color:var(--mut)}.t2{color:var(--acc)}.t3{color:var(--warn)}.t4{color:light-dark(#c4320a,#ff8a65)}
-.lb{font-size:15px;line-height:1.2}.lb small{display:block;color:var(--mut);font-size:13px}
+.t1{color:var(--mut)}.t2{color:var(--acc)}.t3{color:var(--warn)}.t4{color:var(--red)}
+.lb{font-size:15px;line-height:1.2}
 .st{display:flex;align-items:center;gap:2px}
-.st button{width:34px;padding:0;font-size:17px;font-weight:500;border-color:transparent;background:var(--soft)}
-.st input{width:3.4em;-moz-appearance:textfield;text-align:right;font-variant-numeric:tabular-nums;border-color:transparent;font-weight:600}
+.st button{width:34px;padding:0;justify-content:center;font-size:17px;font-weight:500;border-color:transparent;background:var(--soft)}
+.st input{width:3.4em;text-align:right;font-variant-numeric:tabular-nums;border-color:transparent;font-weight:700;min-height:36px;padding:4px 6px}
 .st input:focus{border-color:var(--line)}
-input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
-.st .tot{border:0;background:none;width:auto;min-width:2.6em;padding:0 4px;color:var(--mut);font-weight:500;font-size:14px;text-align:left;white-space:nowrap}
+.st .tot{border:0;background:none;width:auto;min-width:2.6em;padding:0 4px;color:var(--mut);font-weight:500;font-size:14px;white-space:nowrap}
 .row input[type=checkbox]{width:18px;height:18px;accent-color:var(--acc);margin:0;cursor:pointer}
 .hint{font-size:13px;color:var(--mut);margin:10px 0 0}
-.card{position:sticky;top:16px;border:1px solid var(--line);border-radius:16px;padding:20px 22px}
-.figs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
-.fl{font-size:13px;color:var(--mut);line-height:1.3;min-height:2.6em}
-.fv{font-size:clamp(34px,4.4vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin-top:6px;white-space:nowrap;font-variant-numeric:tabular-nums}
-.fv.a{color:var(--acc)}
-.sub{font-size:13px;color:var(--mut);margin-top:4px}
-.fig{position:relative;height:190px;margin:18px 0 4px}
-.fig>svg{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y}
-svg text{font:13px Figtree,sans-serif;fill:var(--mut);paint-order:stroke;stroke:var(--bg);stroke-width:4px}
-.cap{font-size:13px;color:var(--mut);margin:0;min-height:1.5em}
+.prow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.prow input{width:4.2em;text-align:right;font-weight:700;min-height:40px}
+.prow .pm{width:40px;justify-content:center;padding:0;font-size:18px;font-weight:500;background:var(--soft);border-color:transparent}
+.prow .ps{border-radius:99px;min-height:34px}
+.psum{font-size:14px;margin:12px 0 6px}
+.psum b{font-size:18px}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
 th{font-weight:500;color:var(--mut);font-size:13px}
 .n{text-align:right;font-variant-numeric:tabular-nums}
 td.n{white-space:nowrap}
-tr.hi td{font-weight:700}
-.pc{display:flex;gap:4px;margin-top:6px;align-items:flex-end}
-.pc div{flex:1;text-align:center;font-size:12px;color:var(--mut)}
-.pc i{display:block;height:34px;border-radius:4px;background:linear-gradient(var(--acc),var(--acc)) bottom/100% var(--h) no-repeat,var(--accs);margin-bottom:3px}
-.more{border-top:1px solid var(--line);margin-top:8px}
-details{border-bottom:1px solid var(--line)}
-summary{cursor:pointer;padding:14px 0;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+td small{color:var(--mut);font-size:12px;margin-left:6px}
+tfoot td{font-weight:700;border-bottom:0}
+.cap{font-size:13px;color:var(--mut);margin:8px 0 0}
+details{border-top:1px solid var(--line)}
+details:last-of-type{border-bottom:1px solid var(--line)}
+.folds{margin-top:28px}
+summary{cursor:pointer;padding:15px 0;font-weight:700;list-style:none;display:flex;gap:12px;align-items:baseline}
 summary::-webkit-details-marker{display:none}
-summary::after{content:"+";color:var(--mut);font-weight:400;font-size:20px;line-height:1}
-details[open] summary::after{content:"−"}
-.dbody{padding:0 0 20px;max-width:760px}
+summary .sm{flex:1;font-weight:500;font-size:13px;color:var(--mut)}
+summary::after{content:"+";color:var(--mut);font-weight:400;font-size:20px;line-height:1;margin-left:auto}
+details[open]>summary::after{content:"−"}
+.dbody{padding:0 0 20px}
 .dbody p,.dbody li{font-size:14px}
-.dbody ul{padding-left:1.1em;margin:0}.dbody li{margin:5px 0}
-.btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-.links{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px;margin:6px 0}
-textarea{width:100%;min-height:140px;font:12.5px/1.4 ui-monospace,Menlo,monospace}
-.msg{font-size:13px;min-height:1.4em;margin:4px 0}.msg.err{color:light-dark(#c4320a,#ff8a65)}
-.scroll{overflow-x:auto}
-.mx input{width:4em;min-height:32px;padding:3px 6px;font-size:14px}
-.mx select{min-height:32px;font-size:13px;padding:3px 26px 3px 8px;background-position:right 8px center}
-.mx th,.mx td{vertical-align:top}
-.sim{border-top:1px solid var(--line);padding:22px 0 30px}
-.simhead{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
-.simhead h3{font-size:clamp(20px,2.4vw,24px);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:0 0 4px}
-.simin{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.simin input{width:4.6em;text-align:right;font-weight:700;font-size:18px;min-height:44px;-moz-appearance:textfield}
-.simin .pm{width:44px;min-height:44px;padding:0;font-size:18px;font-weight:500;background:var(--soft);border-color:transparent}
-.simin .ps{border-radius:99px;min-height:36px}
-.simin span{color:var(--mut);font-size:14px;margin-right:6px}
-.sf{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5em,1fr));gap:14px 22px;margin-bottom:16px}
-.sf .fv{font-size:clamp(26px,3.4vw,34px)}
-.sf .fl{min-height:0}
-#simt tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--line)}
-#simt td.dup{font-weight:700}
-#simt td.rg{color:var(--mut)}
-.vd{border-radius:12px;padding:14px 16px;background:var(--accs);margin-bottom:18px}
-.vd.stop{background:light-dark(#fdeae5,#3a1d17)}
-.vt{font-size:clamp(22px,2.6vw,26px);font-weight:800;letter-spacing:-.02em;color:var(--acc);line-height:1.15}
-.vd.stop .vt{color:light-dark(#c4320a,#ff8a65)}
-.vd .sub{color:var(--ink);opacity:.8;margin-top:6px}
-.vd .lnk{margin-top:6px;font-size:13px}
-.rules{border-top:1px solid var(--line);padding:22px 0 26px}
-.rr{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:2px 12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}
-.rr>input[type=checkbox]{width:18px;height:18px;margin:6px 0 0;accent-color:var(--acc);cursor:pointer}
+.dbody ul,.dbody ol{padding-left:1.2em;margin:6px 0}.dbody li{margin:4px 0}
+.rr{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:2px 12px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}
+.rr:last-child{border-bottom:0}
+.rr>input[type=checkbox]{width:18px;height:18px;margin:7px 0 0;accent-color:var(--acc);cursor:pointer}
 .rr .lab{font-size:15px;line-height:2}
-.rr .lab input{width:3.4em;min-height:32px;padding:2px 6px;text-align:right;font-weight:700;-moz-appearance:textfield}
-.rr .now{font-size:13px;color:var(--mut);line-height:1.4}
+.rr .lab input{width:3.4em;min-height:32px;padding:2px 6px;text-align:right;font-weight:700}
 .nw{white-space:nowrap}
-.stt{font-size:14px;font-weight:600;white-space:nowrap;text-align:right;padding-top:5px}
-.stt.hit{color:light-dark(#c4320a,#ff8a65)}
-.stt.na{color:var(--mut);font-weight:400}
+.rr .now{font-size:13px;color:var(--mut);line-height:1.4}
+.stt{font-size:14px;font-weight:600;white-space:nowrap;text-align:right;padding-top:6px}
+.stt.hit{color:var(--red)}.stt.na{color:var(--mut);font-weight:400}
 .rr.bind .stt{color:var(--acc)}
 .rr.off .lab,.rr.off .now{opacity:.45}
-.bar .s b{color:light-dark(#c4320a,#ff8a65)}
-@media(max-width:600px){.rr{grid-template-columns:22px minmax(0,1fr)}.stt{grid-column:2;text-align:left;padding-top:2px}}
-.bar{display:none}
-footer{color:var(--mut);font-size:13px;padding:20px 0 36px}
-@media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr);gap:24px}.card{position:static}.bar{display:flex;position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:8px max(4vw,16px);justify-content:space-between;gap:12px;font-size:13px;color:var(--mut)}.bar b{font-size:20px;color:var(--ink);font-weight:800;margin-left:4px;font-variant-numeric:tabular-nums}.bar .a b{color:var(--acc)}}
-@media(max-width:420px){.row{grid-template-columns:2.4em minmax(0,1fr) auto 20px;gap:6px}.st button{width:30px}.st input{width:2.9em;padding:4px}th,td{padding:6px 3px}.card{padding:16px}.figs{gap:12px}}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.links{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px;margin:6px 0}
+textarea{width:100%;min-height:130px;font:12.5px/1.4 ui-monospace,Menlo,monospace}
+.msg{font-size:13px;min-height:1.4em;margin:4px 0}.msg.err{color:var(--red)}
+.scroll{overflow-x:auto}
+.mx input{width:4em;min-height:32px;padding:3px 6px;font-size:14px}
+.mx select{min-height:32px;font-size:13px;padding:2px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.mx th,.mx td{vertical-align:top}
+.cfg section{padding:22px 0;border-bottom:1px solid var(--line);max-width:720px}
+.cfg h3{font-size:18px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em}
+.cfg p{font-size:14px;margin:6px 0}
+.cfg label.f{display:block;font-size:13px;color:var(--mut);margin-top:10px}
+.cfg label.f input{display:block;width:100%;margin-top:4px;color:var(--ink)}
+@media(max-width:860px){.cols{grid-template-columns:minmax(0,1fr);grid-template-areas:"vbox" "coll" "pred"}}
+@media(max-width:600px){.rr{grid-template-columns:22px minmax(0,1fr)}.stt{grid-column:2;text-align:left;padding-top:2px}.tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 10px;padding-top:16px}.tiles .ph{padding:8px}.tiles .ph b{font-size:19px}.tiles .ph span{display:none}.tn{font-size:13.5px;margin-top:6px}.tv{font-size:13px}.pq{display:none}}
+@media(max-width:420px){.row{grid-template-columns:2.4em minmax(0,1fr) auto 20px;gap:6px}.st button{width:30px}.st input{width:2.9em;padding:4px}th,td{padding:6px 3px}.tiles{gap:20px 12px}}
 @media(prefers-reduced-motion:reduce){.row::after{transition:none}}
 </style>
 </head>
 <body>
-<div class="bar" id="bar"></div>
-<div class="wrap">
-  <header>
-    <div>
-      <h1>Doublons de booster</h1>
-      <div class="meta" id="meta"></div>
-    </div>
-    <select id="set" aria-label="Set visé"></select>
-  </header>
+<header class="appbar" id="appbar"></header>
+<div class="notice" id="notice" hidden></div>
 
-  <div class="grid">
-    <section>
-      <h2>Cartes différentes que tu possèdes</h2>
-      <div class="quick"><input type="text" id="quick" placeholder="Saisie rapide : 32 C, 12 U, 2 R, 3 RR" aria-label="Saisie rapide"><button id="qgo">OK</button></div>
-      <div id="rows"></div>
-      <p class="hint">Touche « / total » pour tout cocher. Décoche une rareté que tu ne collectionnes pas : elle comptera comme doublon. <button class="lnk" id="qclr">Tout remettre à 0</button></p>
-    </section>
+<main class="wrap" id="v-home" hidden>
+  <div class="tiles" id="tiles"></div>
+  <p class="foot" id="hfoot"></p>
+</main>
 
-    <section class="card" aria-live="polite">
-      <div class="vd" id="vd"><div class="vt" id="vt">–</div><div class="sub" id="vs"></div><button class="lnk" id="golink">Voir mes règles d'achat</button></div>
-      <div class="figs">
-        <div><div class="fl">Prochain paquet 100 % doublons</div><div class="fv" id="p0">–</div><div class="sub" id="p0s"></div></div>
-        <div><div class="fl">Paquets à ouvrir d'un coup pour 50 %</div><div class="fv a" id="n50">–</div><div class="sub" id="n50s"></div></div>
+<main class="wrap" id="v-set" hidden>
+  <div class="shead"><button class="pk" id="pk" aria-label="Changer l'image du booster"></button><div><h1 id="sname"></h1><div class="meta" id="meta"></div></div></div>
+  <div class="imgp" id="imgp" hidden>
+    <p>Image du booster : choisis une photo, ou colle l'adresse d'une image (sur le site officiel, appui long sur l'image puis « Copier l'adresse de l'image »).</p>
+    <div class="row2"><label class="btn">Choisir une photo<input type="file" id="imgf" accept="image/*" hidden></label><button id="imgx">Retirer l'image</button></div>
+    <div class="row2"><input type="url" id="imgu" placeholder="https://…" aria-label="Adresse de l'image"><button id="imgok">OK</button></div>
+    <p class="msg" id="imgmsg"></p>
+  </div>
+  <div class="cols">
+    <section class="vbox">
+      <div class="vd" id="vd"><div class="vt" id="vt">–</div><div class="vs" id="vs"></div></div>
+      <div class="stats">
+        <div><b id="p0">–</b><span>chance que le prochain paquet soit 100 % doublons</span></div>
+        <div><b id="n50">–</b><span id="n50s">paquets d'un coup pour atteindre 50 %</span></div>
       </div>
-      <div class="fig" id="fig"><svg id="chart" role="img" aria-label="Chance que le paquet suivant soit 100 % doublons selon le nombre de paquets ouverts"></svg></div>
-      <p class="cap" id="hover">Paquets ouverts d'un coup → chance que le suivant soit 100 % doublons.</p>
-      <table id="boxes" style="margin-top:12px"><thead><tr><th>Tu ouvres</th><th class="n">Coût</th><th class="n">Nouvelles</th><th class="n">Suivant 100 % doublons</th></tr></thead><tbody></tbody></table>
-      <p class="cap" style="margin-top:16px">Chance de doublon, carte par carte, dans ton prochain paquet</p>
-      <div class="pc" id="pack"></div>
+    </section>
+    <section class="coll">
+      <h2>Cartes différentes que tu possèdes</h2>
+      <div class="quick"><input type="text" id="quick" placeholder="Saisie rapide : 32 C, 12 U, 2 R" aria-label="Saisie rapide"><button id="qgo">OK</button></div>
+      <div id="rows"></div>
+      <p class="hint">« / 36 » coche tout. Case décochée : rareté que tu ne collectionnes pas. <button class="lnk" id="qclr">Tout remettre à 0</button></p>
+    </section>
+    <section class="pred" id="pred">
+      <h2>Prédire une ouverture</h2>
+      <div class="prow"><span>Si j'ouvre</span><button class="pm" data-n="-1" aria-label="Un de moins">−</button><input type="number" id="simn" min="1" max="2000" value="10" inputmode="numeric" aria-label="Nombre de boosters"><button class="pm" data-n="1" aria-label="Un de plus">+</button><span>boosters</span><button class="ps" data-p="10">10</button><button class="ps" data-p="box">1 boîte</button></div>
+      <p class="psum" id="psum"></p>
+      <table id="simt"><thead><tr><th>Rareté</th><th class="n">Tirées</th><th class="n">Doubles</th><th class="n">Nouvelles</th></tr></thead><tbody></tbody><tfoot></tfoot></table>
+      <p class="cap" id="simcap">Petits chiffres : la fourchette de doubles dans 8 ouvertures sur 10.</p>
     </section>
   </div>
-
-  <section class="rules" id="rules">
-    <div class="simhead"><div><h3>Tes règles d'achat</h3><div class="sub">Tu peux continuer tant qu'aucune règle n'est atteinte. Une seule suffit pour t'arrêter.</div></div></div>
-    <div id="rlist"></div>
-    <p class="cap" style="margin-top:8px">« Dans N paquets » : d'après l'évolution moyenne de ta collection. La règle SAR ne compte qu'une fois la SAR obtenue, la chance ne se planifie pas ; une MUR ou une FUR compte comme une SAR. Une rareté décochée dans ta collection est ignorée dans les conditions.</p>
-  </section>
-
-  <section class="sim" id="simsec">
-    <div class="simhead">
-      <div><h3>Prédire une ouverture</h3><div class="sub">Doubles attendus par rareté, à partir de ta collection actuelle.</div></div>
-      <div class="simin"><button class="pm" data-n="-1" aria-label="Un booster de moins">−</button><input type="number" id="simn" min="1" max="2000" value="10" inputmode="numeric" aria-label="Nombre de boosters à ouvrir"><button class="pm" data-n="1" aria-label="Un booster de plus">+</button><span>boosters</span><button class="ps" data-p="10">10</button><button class="ps" data-p="box">1 boîte</button><button class="ps" data-p="box2">2 boîtes</button></div>
-    </div>
-    <div class="sf">
-      <div><div class="fl">Doubles attendus</div><div class="fv" id="sd">–</div><div class="sub" id="sds"></div></div>
-      <div><div class="fl">Nouvelles cartes</div><div class="fv a" id="sn">–</div><div class="sub" id="sns"></div></div>
-      <div><div class="fl">Coût au prix public</div><div class="fv" id="sc">–</div><div class="sub" id="scs"></div></div>
-      <div><div class="fl">Ensuite, paquet 100 % doublons</div><div class="fv" id="sp">–</div><div class="sub" id="sps"></div></div>
-    </div>
-    <div class="scroll"><table id="simt"><thead><tr><th>Rareté</th><th class="n">Tirées</th><th class="n">Doubles</th><th class="n">8 fois sur 10</th><th class="n">Nouvelles</th><th class="n">Après</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
-    <p class="cap" id="simcap" style="margin-top:8px"></p>
-  </section>
-
-  <div class="more">
-    <details><summary>Hypothèses et méthode</summary><div class="dbody">
+  <div class="folds">
+    <details id="rdet"><summary>Règles d'achat<span class="sm" id="rsum"></span></summary><div class="dbody">
+      <div id="rlist"></div>
+      <p class="cap">Tu peux continuer tant qu'aucune règle n'est atteinte ; une seule suffit pour t'arrêter. « Dans N paquets » : d'après l'évolution moyenne de ta collection. La règle SAR ne compte qu'une fois la SAR obtenue ; une MUR ou une FUR compte comme une SAR. Seuils communs à tous les sets.</p>
+    </div></details>
+    <details id="ddet"><summary>Données de ce set<span class="sm" id="dsum"></span></summary><div class="dbody">
       <ul id="hyp"></ul>
-      <p>Le calcul est exact (inclusion-exclusion sur les cartes encore manquantes), sans simulation ; il a été vérifié contre 60 000 tirages simulés par cas, écarts sous 0,5 point. « Paquets pour 50 % » est le plus petit nombre N de paquets tel que, après les avoir tous ouverts, le paquet suivant a au moins une chance sur deux d'être entièrement composé de doublons.</p>
-    </div></details>
-    <details><summary>Mettre à jour les données</summary><div class="dbody">
-      <p class="meta" id="dver" style="margin-top:0"></p>
       <div class="links" id="slinks"></div>
-      <div class="links" id="glinks"></div>
-      <p>La consigne copiée contient tes données actuelles. Colle-la dans une conversation Claude avec la recherche web, puis colle ici le JSON qu'il te rend et importe-le.</p>
-      <div class="btns"><button class="pri" id="cprompt">Copier la consigne de mise à jour</button></div>
-      <p class="msg" id="pmsg"></p>
-      <textarea id="io" spellcheck="false" placeholder="JSON à importer (toutes les données ou un seul set)"></textarea>
-      <div class="btns"><button class="pri" id="imp">Importer</button><button id="exp">Exporter tout</button><button id="cpy">Copier</button><button id="dup">Dupliquer ce set</button><button id="rst">Données d'origine</button></div>
-      <p class="msg" id="iomsg"></p>
+      <div id="edbody"></div>
     </div></details>
-    <details id="ed"><summary>Modifier le set sélectionné</summary><div class="dbody" id="edbody" style="max-width:none"></div></details>
-    <details><summary>Sources</summary><div class="dbody"><ul id="src"></ul></div></details>
   </div>
-  <footer>Taux d'apparition non officiels (relevés de la communauté japonaise). Ta collection est enregistrée sur cet appareil seulement. Fonctionne hors ligne.</footer>
-</div>
+</main>
+
+<main class="wrap cfg" id="v-cfg" hidden>
+  <section>
+    <h3>Sauvegarde GitHub</h3>
+    <div id="gh-off"><p>La sauvegarde fonctionne dans l'app installée : <a href="https://quirkyturtle7.github.io/doublons-booster/" target="_blank" rel="noopener">quirkyturtle7.github.io/doublons-booster</a>.</p></div>
+    <div id="gh-on">
+      <p>Ta collection, tes règles et tes images vont dans un fichier de ton dépôt GitHub (branche « sauvegarde »). Le bouton Sauvegarder, en haut, se colore dès que quelque chose a changé.</p>
+      <ol class="dbody" style="padding-bottom:0">
+        <li><a id="toklink" target="_blank" rel="noopener">Crée un jeton GitHub</a> (formulaire déjà prérempli).</li>
+        <li>Dans « Repository access », choisis « Only select repositories » puis <b>doublons-booster</b>. Vérifie « Contents : Read and write ».</li>
+        <li>Génère le jeton, copie-le, colle-le ci-dessous. Il reste sur cet appareil.</li>
+      </ol>
+      <label class="f">Jeton<input type="password" id="ghtok" autocomplete="off" placeholder="github_pat_…"></label>
+      <details style="border:0;margin-top:6px"><summary style="padding:8px 0;font-weight:600;font-size:14px">Emplacement</summary>
+        <label class="f">Dépôt<input type="text" id="ghrepo"></label><label class="f">Branche<input type="text" id="ghbr"></label><label class="f">Fichier<input type="text" id="ghpath"></label>
+      </details>
+      <div class="btns"><button class="pri" id="ghcon">Connecter</button><button id="ghload">Charger depuis GitHub</button><button id="ghoff">Déconnecter</button></div>
+      <p class="msg" id="ghmsg"></p>
+    </div>
+  </section>
+  <section>
+    <h3>Données des sets</h3>
+    <p class="meta" id="dver"></p>
+    <div class="links" id="glinks"></div>
+    <p>La consigne copiée contient tes données actuelles. Colle-la dans une conversation Claude avec la recherche web, puis importe ici le JSON qu'il te rend.</p>
+    <div class="btns"><button class="pri" id="cprompt">Copier la consigne de mise à jour</button></div>
+    <p class="msg" id="pmsg"></p>
+    <textarea id="io" spellcheck="false" placeholder="JSON à importer (toutes les données ou un seul set)"></textarea>
+    <div class="btns"><button class="pri" id="imp">Importer</button><button id="exp">Exporter tout</button><button id="cpy">Copier</button><button id="rst">Données d'origine</button></div>
+    <p class="msg" id="iomsg"></p>
+  </section>
+  <section>
+    <h3>Méthode</h3>
+    <p>Chaque carte d'une rareté est tirée au hasard parmi les cartes de cette rareté, sans doublon dans un même paquet. Structure observée des boosters japonais 5 cartes : 3 C ; une U parfois remplacée par AR, SR, SAR ou MUR ; une U, R ou RR. Taux par boîte relevés par la communauté japonaise, pas officiels. Calculs exacts (vérifiés par simulation) ; garanties par boîte et god packs ignorés.</p>
+    <ul class="dbody" id="csrc"></ul>
+  </section>
+</main>
 
 <script>
 {
@@ -278,16 +312,18 @@ const DATA0={version:1,updated:'2026-11-27',sets:[
 ],common:[S.gp,S.alt]};
 
 
+const COL={M7:'#4b5bd6',M6a:'#b8901c',M6:'#16916a',M5:'#1d4e89',M4:'#6b3fa0',M3:'#3a3f58',M2a:'#c2387e',M2:'#d9482b',M1L:'#e0662a',M1S:'#2f7fd1'};
+const TOKEN_URL='https://github.com/settings/personal-access-tokens/new?name=Doublons+de+booster&description=Sauvegarde+de+l%27app+Doublons+de+booster&target_name=QuirkyTurtle7&expires_in=365&contents=write';
+const CAN_SYNC=/(^|\.)github\.io$|^localhost$|^127\./.test(location.hostname);
 /* ---------- état ---------- */
 const LS={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
 const clone=o=>JSON.parse(JSON.stringify(o));
 let data=LS.get('pkdup:data')||clone(DATA0);
-let st=LS.get('pkdup:state')||{sel:'M6',owned:{M6:{C:32,U:12,R:2,RR:3}},tracked:{}};
-st.owned=st.owned||{};st.tracked=st.tracked||{};
+let st=LS.get('pkdup:state')||{sel:'M7',owned:{},tracked:{}};
 const RULES0={r1:{on:true},r2:{on:true},r3:{on:true,c:80,u:65},r4:{on:true,c:70,u:55},r5:{on:true,ar:25,c:70,u:55},r6:{on:true,m:1,p:50}};
-st.rules=st.rules||{};for(const k in RULES0)st.rules[k]=Object.assign({},RULES0[k],st.rules[k]||{});
-const save=()=>LS.set('pkdup:state',st);
-const saveData=()=>LS.set('pkdup:data',data);
+const mergeRules=r=>{const o={};for(const k in RULES0)o[k]=Object.assign({},RULES0[k],(r||{})[k]||{});return o};
+st.owned=st.owned||{};st.tracked=st.tracked||{};st.img=st.img||{};st.rules=mergeRules(st.rules);
+const GH={get c(){return Object.assign({repo:'QuirkyTurtle7/doublons-booster',branch:'sauvegarde',path:'sauvegarde.json'},LS.get('pkdup:gh')||{})},set(o){LS.set('pkdup:gh',Object.assign(this.c,o))}};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf=(x,d=1)=>x.toLocaleString('fr-FR',{maximumFractionDigits:d});
@@ -299,212 +335,220 @@ const owned=set=>(st.owned[set.id]=st.owned[set.id]||{});
 const tracked=set=>{const t=st.tracked[set.id]||{};const o={};set.rarities.forEach(r=>o[r.key]=r.key in t?t[r.key]:r.track!==false);return o};
 const tier=k=>'t'+(TIER[k]||3);
 const nPack=set=>set.slots.reduce((a,s)=>a+(Math.max(1,s.n|0)),0);
+const boxes=(s,n)=>{const b=n/s.packsPerBox;return `${nf(b,1)} boîte${b>=2?'s':''}`};
 const STAT={provisoire:'données provisoires',partielle:'données partielles',modifiée:'données modifiées',importée:'données importées'};
-const boxes=n=>{const b=n/cur().packsPerBox;return `${nf(b,1)} boîte${b>=2?'s':''}`};
-let prep=null,curve=null;
-
+const msg=(id,t,err)=>{const e=$(id);if(!e)return;e.textContent=t;e.classList.toggle('err',!!err)};
+const save=()=>{LS.set('pkdup:state',st);updSave()};
+const saveData=()=>{LS.set('pkdup:data',data);updSave()};
+let view='home',x=null;
 function validSet(s){return s&&typeof s.id==='string'&&s.id&&Array.isArray(s.rarities)&&s.rarities.length&&s.rarities.every(r=>r&&typeof r.key==='string'&&r.key&&Number.isFinite(+r.count))&&Array.isArray(s.slots)&&s.slots.length&&s.slots.every(x=>x&&typeof x.filler==='string')&&(+s.packsPerBox)>0}
 function normSet(s){s.packsPerBox=+s.packsPerBox;s.price=+s.price||0;s.name=s.name||s.id;s.jp=s.jp||s.name;s.release=s.release||'';s.status=s.status||'importée';s.kind=s.kind||'';s.rarities.forEach(r=>{r.count=Math.max(0,r.count|0);r.label=r.label||LAB[r.key]||r.key});s.slots.forEach(x=>{x.n=Math.max(1,x.n|0);x.hits=x.hits||{};x.label=x.label||'Emplacement'});s.cardsPerPack=nPack(s);return s}
 function upsert(s){const i=data.sets.findIndex(x=>x.id===s.id);if(i>=0)data.sets[i]=s;else data.sets.unshift(s);saveData()}
 
 
-function renderHead(){
-  $('#set').innerHTML=data.sets.map(s=>`<option value="${esc(s.id)}"${s.id===st.sel?' selected':''}>${esc(s.id)} · ${esc(s.name)}</option>`).join('');
-  const s=cur();
-  $('#meta').innerHTML=esc([s.jp,date(s.release),`${s.price} ¥ le paquet`,`${nPack(s)} cartes`,`${s.packsPerBox} paquets par boîte`].join(' · '))+(s.status!=='vérifiée'?`<span class="tag">${esc(STAT[s.status]||s.status)}</span>`:'');
-}
-const rowPct=(r,v,on)=>r.count?(on?v/r.count*100:100):0;
-function renderRows(){
-  const s=cur(),o=owned(s),t=tracked(s);
-  $('#rows').innerHTML=s.rarities.map(r=>{const v=Math.min(r.count,o[r.key]|0);const on=t[r.key];return `<div class="row${on?'':' off'}" data-k="${esc(r.key)}" style="--w:${rowPct(r,v,on)}%">
-  <span class="k ${tier(r.key)}">${esc(r.key)}</span>
-  <span class="lb">${esc(r.label)}</span>
-  <span class="st"><button data-a="dec" aria-label="Retirer une ${esc(r.key)}">−</button><input type="number" id="o-${esc(r.key)}" min="0" max="${r.count|0}" value="${v}" inputmode="numeric" aria-label="${esc(r.label)} possédées"><button data-a="inc" aria-label="Ajouter une ${esc(r.key)}">+</button><button class="tot" data-a="max" title="Toutes possédées">/ ${r.count|0}</button></span>
-  <input type="checkbox" data-a="trk"${on?' checked':''} title="Je collectionne cette rareté" aria-label="Je collectionne les ${esc(r.key)}"></div>`}).join('');
-}
-function updRow(el,r,v,on){el.classList.toggle('off',!on);el.style.setProperty('--w',rowPct(r,v,on)+'%')}
-
-function compute(){
-  const s=cur();prep=Engine.prepare(s,owned(s),tracked(s));
-  const p0=Engine.fullDup(prep,0),n50=Engine.packsFor(prep,0.5),n90=Engine.packsFor(prep,0.9),ppb=s.packsPerBox;
-  $('#p0').textContent=pct(p0);
-  $('#p0s').textContent=p0>=0.5?'Déjà au-dessus de 1 sur 2':p0<1e-6?'Pratiquement impossible pour l\'instant':`Environ 1 paquet sur ${nf(1/p0,0)}`;
-  const nTxt=n50===0?'0':isFinite(n50)?nf(n50,0):'∞';
-  $('#n50').textContent=nTxt;
-  $('#n50s').textContent=n50===0?'50 % déjà atteint':isFinite(n50)?`${boxes(n50)} · ${yen(n50*s.price)} · +${nf(Engine.newCards(prep,n50),0)} cartes`:'Non atteignable avec ces données';
-  const nMax=Math.max(10,Math.min(isFinite(n90)?Math.ceil(n90*1.1):(isFinite(n50)?n50*3:300),5e6));
-  const pts=[];for(let i=0;i<=140;i++){const n=Math.round(nMax*i/140);pts.push([n,Engine.fullDup(prep,n)])}
-  curve={pts,nMax,n50};drawChart();
-  const rows=[[ppb,'1 boîte'],[2*ppb,'2 boîtes'],[3*ppb,'3 boîtes'],[5*ppb,'5 boîtes']];
-  if(isFinite(n50)&&n50>0)rows.push([n50,`${nf(n50,0)} paquets`]);
-  rows.sort((a,b)=>a[0]-b[0]||(a[1].includes('boîte')?-1:1));for(let i=rows.length-1;i>0;i--)if(rows[i][0]===rows[i-1][0])rows.splice(i,1);
-  $('#boxes tbody').innerHTML=rows.map(([n,l])=>`<tr${n===n50?' class="hi"':''}><td>${esc(l)}</td><td class="n">${yen(n*s.price)}</td><td class="n">+${nf(Engine.newCards(prep,n),0)}</td><td class="n">${pct(Engine.fullDup(prep,n))}</td></tr>`).join('');
-  // chance de doublon par carte du prochain paquet
-  const keys=s.rarities.map(r=>r.key),T=prep.T,O=prep.O,cards=[];
-  for(const sl of s.slots){const n=Math.max(1,sl.n|0);const outs=[];let sum=0;for(const[r,pb]of Object.entries(sl.hits||{})){const i=keys.indexOf(r);if(i<0)continue;const p=Math.max(0,+pb||0)/(ppb*n);if(p>0){outs.push([i,p]);sum+=p}}const fi=keys.indexOf(sl.filler);if(fi>=0&&sum<1)outs.push([fi,1-sum]);else if(sum>0)outs.forEach(x=>x[1]/=sum);
-    const pd=outs.reduce((a,[i,p])=>a+p*(T[i]?O[i]/T[i]:1),0);outs.sort((a,b)=>b[1]-a[1]);
-    for(let k=0;k<n&&cards.length<12;k++)cards.push({pd,tip:`${sl.label} : `+outs.map(([i,p])=>`${keys[i]} ${pct(p)}`).join(', ')})}
-  queueMicrotask(forecast);queueMicrotask(()=>{if($('#rlist').children.length)updRules()});
-  $('#pack').innerHTML=cards.map((c,i)=>`<div title="${esc(c.tip)}"><i style="--h:${(c.pd*100).toFixed(1)}%"></i>${nf(c.pd*100,0)}%</div>`).join('');
-}
-function drawChart(){
-  const svg=$('#chart');if(!curve)return;const W=svg.clientWidth,H=svg.clientHeight;if(!W||!H)return;
-  const m={l:44,r:8,t:8,b:24},iw=W-m.l-m.r,ih=H-m.t-m.b,{pts,nMax,n50}=curve;
-  const x=n=>m.l+iw*n/nMax,y=f=>m.t+ih*(1-f);
-  const raw=nMax/(W<420?3:5),mag=10**Math.floor(Math.log10(raw)),step=[1,2,5,10].map(k=>k*mag).find(k=>k>=raw)||mag*10;
-  let g='';for(const v of [0,.5,1])g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"${v===.5?' stroke-dasharray="3 4"':''}/><text x="${m.l-6}" y="${y(v)+4}" text-anchor="end">${v*100}%</text>`;
-  for(let v=0;v<=nMax;v+=step)g+=`<text x="${x(v)}" y="${H-4}" text-anchor="middle">${nf(v,0)}</text>`;
-  const line=pts.map(([n,f],i)=>`${i?'L':'M'}${x(n).toFixed(1)},${y(f).toFixed(1)}`).join('');
-  let mk='';if(isFinite(n50)&&n50>0&&n50<=nMax){const px=x(n50),py=y(.5),right=px<W*.6;mk=`<line x1="${px}" x2="${px}" y1="${py}" y2="${y(0)}" stroke="var(--acc)" stroke-dasharray="3 4"/><circle cx="${px}" cy="${py}" r="5" fill="var(--acc)" stroke="var(--bg)" stroke-width="2.5"/><text x="${right?px+10:px-10}" y="${py-10}" text-anchor="${right?'start':'end'}" style="fill:var(--ink);font-weight:600">${nf(n50,0)} paquets</text>`}
-  svg.innerHTML=`${g}<path d="${line}L${x(nMax)},${y(0)}L${x(0)},${y(0)}Z" fill="var(--accs)" opacity=".7"/><path d="${line}" fill="none" stroke="var(--acc)" stroke-width="2.25" stroke-linejoin="round"/>${mk}<line id="hl" y1="${m.t}" y2="${y(0)}" stroke="var(--mut)" opacity="0"/><rect id="hz" x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent" style="pointer-events:all;cursor:crosshair"/>`;
-  const hz=svg.querySelector('#hz'),hl=svg.querySelector('#hl');
-  const mv=e=>{const r=svg.getBoundingClientRect();const n=Math.max(0,Math.min(nMax,Math.round((e.clientX-r.left-m.l)/iw*nMax)));hl.setAttribute('x1',x(n));hl.setAttribute('x2',x(n));hl.setAttribute('opacity','.6');$('#hover').textContent=`${nf(n,0)} paquets (${boxes(n)}) → suivant 100 % doublons à ${pct(Engine.fullDup(prep,n))}`};
-  hz.addEventListener('pointermove',mv);hz.addEventListener('pointerdown',mv);
-}
-const ro=new ResizeObserver(()=>drawChart());ro.observe($('#fig'));
-
-let simTimer=null,simRes=null,simKey='';
-const fm=x=>x<0.05?'≈ 0':nf(x,x<100?1:0);
-function forecast(){
-  const s=cur();if(!prep)return;
-  const N=Math.max(1,Math.min(2000,parseInt($('#simn').value,10)||1));st.simN=N;save();
-  const f=Engine.forecast(prep,N),t=tracked(s),tr=s.rarities.map(r=>t[r.key]);
-  const tp=f.reduce((a,x)=>a+x.pulled,0),tn=f.reduce((a,x)=>a+x.fresh,0),td=Math.max(0,tp-tn);
-  const T=prep.T,O=prep.O;let tt=0,to=0;T.forEach((x,i)=>{if(tr[i]){tt+=x;to+=O[i]}});
-  $('#sd').textContent=nf(td,1);$('#sds').textContent=`sur ${nf(tp,0)} cartes tirées (${nf(tp?td/tp*100:0,0)} %)`;
-  $('#sn').textContent=nf(tn,1);$('#sns').textContent=tt?`collection ${nf(to/tt*100,0)} % → ${nf((to+tn)/tt*100,0)} %`:'';
-  $('#sc').textContent=yen(N*s.price);$('#scs').textContent=boxes(N);
-  $('#sp').textContent=pct(Engine.fullDup(prep,N));$('#sps').textContent=`contre ${pct(Engine.fullDup(prep,0))} aujourd'hui`;
-  const key=s.id+'|'+N+'|'+O.join(',');const rg=i=>simRes&&simKey===key?(simRes[i].lo===simRes[i].hi?nf(simRes[i].lo,0):`${nf(simRes[i].lo,0)}–${nf(simRes[i].hi,0)}`):'…';
-  $('#simt tbody').innerHTML=s.rarities.map((r,i)=>`<tr><td><span class="k ${tier(r.key)}">${esc(r.key)}</span></td><td class="n">${fm(f[i].pulled)}</td><td class="n dup">${fm(f[i].dup)}</td><td class="n rg">${rg(i)}</td><td class="n">${tr[i]?fm(f[i].fresh):'—'}</td><td class="n">${tr[i]&&T[i]?nf((O[i]+f[i].fresh)/T[i]*100,0)+' %':'—'}</td></tr>`).join('');
-  $('#simt tfoot').innerHTML=`<tr><td>Total</td><td class="n">${fm(tp)}</td><td class="n">${fm(td)}</td><td class="n rg">${rg(T.length)}</td><td class="n">${fm(tn)}</td><td class="n">${tt?nf((to+tn)/tt*100,0)+' %':'—'}</td></tr>`;
-  if(simKey!==key){clearTimeout(simTimer);simTimer=setTimeout(()=>{const sims=Math.max(300,Math.min(3000,Math.floor(1.5e6/(N*nPack(s)))));simRes=Engine.simulate(s,prep,N,sims);simKey=key;
-    $('#simcap').textContent=`Tirées, doubles et nouvelles : moyennes exactes. « 8 fois sur 10 » : fourchette du nombre de doubles sur ${nf(sims,0)} ouvertures simulées. Un double = une carte que tu avais déjà, ou déjà sortie dans ce même lot.`;forecast()},150)}
-}
-function rctx(){const s=cur(),keys=s.rarities.map(r=>r.key),t=tracked(s),ix=k=>keys.indexOf(k);
+/* ---------- règles d'achat ---------- */
+function ctx(s){const pr=Engine.prepare(s,owned(s),tracked(s)),keys=s.rarities.map(r=>r.key),t=tracked(s),ix=k=>keys.indexOf(k);
   const cI=ix('C')>=0?ix('C'):ix('N'),uI=ix('U'),arI=ix('AR'),sarI=['SAR','MUR','FUR'].map(ix).filter(i=>i>=0);
-  const ok=i=>i>=0&&t[keys[i]]!==false&&prep.T[i]>0;
-  return{s,keys,cI,uI,arI,sarI,ok,n:nPack(s),cN:cI>=0?keys[cI]:'C'}}
-function rstate(x,N){const own=Engine.expOwned(prep,N);return{own,pc:i=>own[i]/prep.T[i]*100,sar:x.sarI.some(i=>x.ok(i)&&prep.O[i]>0),p6:()=>Engine.pNewAtMost(prep,N,st.rules.r6.m)*100}}
+  const ok=i=>i>=0&&t[keys[i]]!==false&&pr.T[i]>0;
+  return{s,pr,keys,cI,uI,arI,sarI,ok,n:nPack(s),cN:cI>=0?keys[cI]:'C'}}
+function rstate(x,N){const own=Engine.expOwned(x.pr,N);return{own,pc:i=>own[i]/x.pr.T[i]*100,sar:x.sarI.some(i=>x.ok(i)&&x.pr.O[i]>0),p6:()=>Engine.pNewAtMost(x.pr,N,st.rules.r6.m)*100}}
 const conds=(x,S,c,u)=>[x.ok(x.cI)?S.pc(x.cI)>=c-1e-9:null,x.ok(x.uI)?S.pc(x.uI)>=u-1e-9:null].filter(v=>v!==null);
 const RULES=[
-  {id:'r1',app:x=>x.ok(x.cI),hit:(x,S)=>S.own[x.cI]>=prep.T[x.cI]-0.5},
-  {id:'r2',app:x=>x.ok(x.uI),hit:(x,S)=>S.own[x.uI]>=prep.T[x.uI]-0.5},
+  {id:'r1',app:x=>x.ok(x.cI),hit:(x,S)=>S.own[x.cI]>=x.pr.T[x.cI]-0.5},
+  {id:'r2',app:x=>x.ok(x.uI),hit:(x,S)=>S.own[x.uI]>=x.pr.T[x.uI]-0.5},
   {id:'r3',app:x=>x.ok(x.cI)||x.ok(x.uI),hit:(x,S)=>conds(x,S,st.rules.r3.c,st.rules.r3.u).every(Boolean)},
   {id:'r4',app:x=>x.sarI.some(x.ok),hit:(x,S)=>S.sar&&conds(x,S,st.rules.r4.c,st.rules.r4.u).every(Boolean)},
   {id:'r5',app:x=>x.ok(x.arI),hit:(x,S)=>S.pc(x.arI)>=st.rules.r5.ar-1e-9&&conds(x,S,st.rules.r5.c,st.rules.r5.u).every(Boolean)},
-  {id:'r6',app:x=>true,hit:(x,S)=>S.p6()>=st.rules.r6.p-1e-9}];
+  {id:'r6',app:()=>true,hit:(x,S)=>S.p6()>=st.rules.r6.p-1e-9}];
 function reachN(R,x){const f=N=>R.hit(x,rstate(x,N));if(f(0))return 0;if(!f(2000))return Infinity;let lo=0,hi=1;while(!f(hi)){lo=hi;hi*=2}while(hi-lo>1){const m=(lo+hi)>>1;if(f(m))hi=m;else lo=m}return hi}
-function renderRules(){const x=rctx(),R=st.rules,n=x.n,c=esc(x.cN);
+function verdict(x){const R=st.rules,S0=rstate(x,0),res={};
+  for(const r of RULES){const on=R[r.id].on,app=r.app(x);res[r.id]={on,app,N:on&&app?(r.id==='r4'&&!S0.sar?Infinity:reachN(r,x)):null}}
+  const act=Object.entries(res).filter(([,v])=>v.on&&v.app),K=act.length?Math.min(...act.map(([,v])=>v.N)):Infinity;
+  return{res,S0,act:act.length,K,bind:isFinite(K)?act.filter(([,v])=>v.N===K).map(([k])=>k):[]}}
+const rname=(x,k)=>{const R=st.rules,u=id=>x.uI>=0?` et U ${R[id].u} %`:'';return{r1:`toutes les ${x.cN}`,r2:'toutes les U',r3:`${x.cN} ${R.r3.c} %${u('r3')}`,r4:`SAR + ${x.cN} ${R.r4.c} %${u('r4')}`,r5:`AR ${R.r5.ar} % + ${x.cN} ${R.r5.c} %${u('r5')}`,r6:`${x.n-R.r6.m} doubles ou + à ${R.r6.p} %`}[k]};
+const vshort=v=>!v.act?'Aucune règle active':v.K===0?'Stop':isFinite(v.K)?`Encore ${nf(v.K,0)} paquet${v.K>1?'s':''}`:'Pas de limite';
+
+/* ---------- images ---------- */
+const imgOk=v=>typeof v==='string'&&(/^https:\/\//.test(v)||/^data:image\/(jpeg|png|webp|gif);base64,/.test(v));
+const art=s=>`<div class="art" style="--c:${COL[s.id]||'#4b5bd6'}"><div class="ph"><b>${esc(s.id)}</b><span>${esc(s.jp)}</span></div>${imgOk(st.img[s.id])?`<img src="${esc(st.img[s.id])}" alt="">`:''}</div>`;
+const fixImgs=root=>root.querySelectorAll('.art img').forEach(i=>{const k=()=>i.remove();if(i.complete&&!i.naturalWidth)k();else i.addEventListener('error',k)});
+
+/* ---------- barre du haut et sauvegarde ---------- */
+let saving=false,saveErr='';
+const payload=()=>JSON.stringify({v:1,owned:st.owned,tracked:st.tracked,rules:st.rules,img:st.img,data:LS.get('pkdup:data')});
+const ghOn=()=>CAN_SYNC&&!!GH.c.token;
+const dirty=()=>payload()!==GH.c.snap;
+function renderBar(){let L;
+  if(view==='home')L='<span class="ttl">Série MEGA</span>';
+  else if(view==='set')L=`<a class="back" href="#" aria-label="Retour aux extensions">‹</a><div class="ttl2"><b>${esc(cur().name)}</b><span class="vmini" id="vmini"></span></div>`;
+  else L='<a class="back" href="#" aria-label="Retour">‹</a><span class="ttl">Réglages</span>';
+  $('#appbar').innerHTML=L+'<button class="savebtn" id="savebtn" hidden></button>'+(view==='home'?'<a class="ib" href="#reglages">Réglages</a>':'');updSave()}
+function updSave(){const b=$('#savebtn');if(!b)return;b.hidden=!ghOn();if(b.hidden)return;b.className='savebtn';b.disabled=saving;b.title=saveErr;
+  if(saving)b.textContent='Sauvegarde…';else if(saveErr){b.classList.add('err');b.textContent='Réessayer'}
+  else if(dirty()){b.classList.add('dirty');b.textContent='Sauvegarder'}else{b.classList.add('clean');b.textContent='Sauvegardé'}}
+const b64enc=s=>{const b=new TextEncoder().encode(s);let o='';for(let i=0;i<b.length;i+=0x8000)o+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(o)};
+const b64dec=s=>new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g,'')),c=>c.charCodeAt(0)));
+async function gh(method,path,body){const c=GH.c;const r=await fetch('https://api.github.com/repos/'+c.repo+path,{method,cache:'no-store',headers:Object.assign({Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined});return r}
+const fpath=()=>'/contents/'+GH.c.path.split('/').map(encodeURIComponent).join('/');
+const ghErr=r=>new Error(r.status===401?'Jeton invalide ou expiré.':r.status===403?'Le jeton n\'a pas le droit d\'écrire (Contents : Read and write).':r.status===404?'Dépôt, branche ou accès introuvable : vérifie que le jeton a accès à doublons-booster.':'Erreur GitHub '+r.status+'.');
+async function ghLoad(){const r=await gh('GET',fpath()+'?ref='+encodeURIComponent(GH.c.branch));if(r.status===404)return null;if(!r.ok)throw ghErr(r);const j=await r.json();return{sha:j.sha,p:JSON.parse(b64dec(j.content))}}
+async function ghSave(){const p=payload();const put=sha=>gh('PUT',fpath(),{message:'Sauvegarde '+new Date().toLocaleString('fr-FR'),content:b64enc(JSON.stringify(Object.assign({savedAt:new Date().toISOString()},JSON.parse(p)))),branch:GH.c.branch,...(sha?{sha}:{})});
+  let r=await put(GH.c.lastSha);
+  if(r.status===409||r.status===422){const g=await gh('GET',fpath()+'?ref='+encodeURIComponent(GH.c.branch));r=await put(g.ok?(await g.json()).sha:undefined)}
+  if(!r.ok)throw ghErr(r);const j=await r.json();GH.set({lastSha:j.content.sha,snap:p})}
+function applyRemote(rem){const p=rem.p||{};st.owned=p.owned||{};st.tracked=p.tracked||{};st.rules=mergeRules(p.rules);st.img=p.img||{};
+  if(p.data&&Array.isArray(p.data.sets)&&p.data.sets.length){data=p.data;LS.set('pkdup:data',data)}else{LS.del('pkdup:data');data=clone(DATA0)}
+  if(!data.sets.some(s=>s.id===st.sel))st.sel=data.sets[0].id;LS.set('pkdup:state',st);GH.set({lastSha:rem.sha,snap:payload()});$('#notice').hidden=true;route()}
+let pendingRem=null;
+function notice(t,rem){pendingRem=rem;const n=$('#notice');n.innerHTML=`<div><span>${esc(t)}</span><button class="pri" data-nb="load">Charger</button><button data-nb="keep">Garder ce téléphone</button></div>`;n.hidden=false}
+async function syncCheck(quiet){try{const rem=await ghLoad();const c=GH.c;if(!rem){if(!quiet)msg('#ghmsg','Connecté. Aucune sauvegarde sur GitHub pour l\'instant : appuie sur Sauvegarder.');return}
+  if(rem.sha===c.lastSha){if(!quiet)msg('#ghmsg','Connecté. Ce téléphone est à jour avec GitHub.');return}
+  if(c.lastSha&&!dirty()){applyRemote(rem);if(!quiet)msg('#ghmsg','Sauvegarde GitHub chargée.');return}
+  notice(c.lastSha?'Ta sauvegarde GitHub est plus récente que ce téléphone.':'Une sauvegarde existe déjà sur GitHub.',rem);if(!quiet)msg('#ghmsg','Connecté. Choisis quelle version garder (en haut).')}
+  catch(e){if(!quiet)msg('#ghmsg',e.message||'GitHub injoignable (hors ligne ?).',true)}}
+
+/* ---------- accueil ---------- */
+function renderHome(){const sets=data.sets.slice().sort((a,b)=>a.release<b.release?1:a.release>b.release?-1:0);
+  $('#tiles').innerHTML=sets.map(s=>{const v=verdict(ctx(s));const cls=!v.act||(!isFinite(v.K)&&v.K!==0)?'na':v.K===0?'stop':'';
+    const tv=v.act&&isFinite(v.K)&&v.K>0?`Encore ${nf(v.K,0)}<span class="pq"> paquet${v.K>1?'s':''}</span>`:esc(vshort(v));
+    return `<a class="tile" href="#set-${encodeURIComponent(s.id)}">${art(s)}<div class="tn">${esc(s.name)}</div><div class="tv ${cls}">${tv}</div></a>`}).join('');
+  fixImgs($('#tiles'));
+  $('#hfoot').textContent=ghOn()?'Collection enregistrée sur ce téléphone et sauvegardée sur GitHub.':'Collection enregistrée sur ce téléphone.'+(CAN_SYNC?' Sauvegarde GitHub : voir Réglages.':'')}
+
+/* ---------- page d'un set ---------- */
+const rowPct=(r,v,on)=>r.count?(on?v/r.count*100:100):0;
+function renderSetHead(){const s=cur();$('#pk').innerHTML=art(s);fixImgs($('#pk'));$('#sname').textContent=s.name;
+  $('#meta').innerHTML=esc([s.jp,date(s.release),`${s.price} ¥`,`${nPack(s)} cartes`].join(' · '))+(s.status!=='vérifiée'?`<span class="tag">${esc(STAT[s.status]||s.status)}</span>`:'')}
+function renderRows(){const s=cur(),o=owned(s),t=tracked(s);
+  $('#rows').innerHTML=s.rarities.map(r=>{const v=Math.min(r.count,o[r.key]|0),on=t[r.key];return `<div class="row${on?'':' off'}" data-k="${esc(r.key)}" style="--w:${rowPct(r,v,on)}%">
+  <span class="k ${tier(r.key)}">${esc(r.key)}</span><span class="lb">${esc(r.label)}</span>
+  <span class="st"><button data-a="dec" aria-label="Retirer une ${esc(r.key)}">−</button><input type="number" min="0" max="${r.count|0}" value="${v}" inputmode="numeric" aria-label="${esc(r.label)} possédées"><button data-a="inc" aria-label="Ajouter une ${esc(r.key)}">+</button><button class="tot" data-a="max" title="Toutes possédées">/ ${r.count|0}</button></span>
+  <input type="checkbox" data-a="trk"${on?' checked':''} title="Je collectionne cette rareté" aria-label="Je collectionne les ${esc(r.key)}"></div>`}).join('')}
+function updRow(el,r,v,on){el.classList.toggle('off',!on);el.style.setProperty('--w',rowPct(r,v,on)+'%')}
+function compute(){const s=cur();x=ctx(s);const pr=x.pr;
+  const p0=Engine.fullDup(pr,0),n50=Engine.packsFor(pr,0.5);
+  $('#p0').textContent=pct(p0);
+  $('#n50').textContent=n50===0?'0':isFinite(n50)?nf(n50,0):'∞';
+  $('#n50s').textContent=n50===0?'50 % déjà atteint':`paquets d'un coup pour atteindre 50 %${isFinite(n50)?` (${yen(n50*s.price)})`:''}`;
+  const v=verdict(x),stop=v.act&&v.K===0;
+  $('#vd').className='vd'+(stop?' stop':'');
+  $('#vt').textContent=!v.act?'Aucune règle active':stop?'Stop, n\'achète plus':isFinite(v.K)?`Encore ${nf(v.K,0)} paquet${v.K>1?'s':''} maximum`:'Pas de limite';
+  $('#vs').textContent=!v.act?'Active au moins une règle d\'achat.':stop?'Règle atteinte : '+v.bind.map(k=>rname(x,k)).join(', ')+'.':isFinite(v.K)?`Soit ${boxes(s,v.K)}. Ensuite : ${v.bind.map(k=>rname(x,k)).join(', ')}.`:'Aucune règle active ne sera atteinte.';
+  const vm=$('#vmini');if(vm){vm.textContent=vshort(v);vm.className='vmini'+(stop?' stop':'')}
+  updRules(v);forecast()}
+let simTimer=null,simRes=null,simKey='';
+const fm=v=>v<0.05?'≈ 0':nf(v,v<100?1:0);
+function forecast(){const s=cur(),pr=x.pr,N=Math.max(1,Math.min(2000,parseInt($('#simn').value,10)||1));st.simN=N;LS.set('pkdup:state',st);
+  const f=Engine.forecast(pr,N),t=tracked(s),tr=s.rarities.map(r=>t[r.key]);
+  const tp=f.reduce((a,v)=>a+v.pulled,0),tn=f.reduce((a,v)=>a+v.fresh,0),td=Math.max(0,tp-tn);
+  const key=s.id+'|'+N+'|'+pr.O.join(','),rg=i=>simRes&&simKey===key?`<small>${simRes[i].lo===simRes[i].hi?nf(simRes[i].lo,0):nf(simRes[i].lo,0)+'–'+nf(simRes[i].hi,0)}</small>`:'';
+  $('#psum').innerHTML=`≈ <b>${esc(nf(td,0))}</b> doubles et <b>${esc(nf(tn,0))}</b> nouvelles sur ${esc(nf(tp,0))} cartes · ${esc(yen(N*s.price))}`;
+  $('#simt tbody').innerHTML=s.rarities.map((r,i)=>f[i].pulled<0.05?'':`<tr><td><span class="k ${tier(r.key)}">${esc(r.key)}</span></td><td class="n">${fm(f[i].pulled)}</td><td class="n">${fm(f[i].dup)}${rg(i)}</td><td class="n">${tr[i]?fm(f[i].fresh):'—'}</td></tr>`).join('');
+  $('#simt tfoot').innerHTML=`<tr><td>Total</td><td class="n">${fm(tp)}</td><td class="n">${fm(td)}${rg(s.rarities.length)}</td><td class="n">${fm(tn)}</td></tr>`;
+  if(simKey!==key){clearTimeout(simTimer);simTimer=setTimeout(()=>{if(cur()!==s)return;const sims=Math.max(300,Math.min(3000,Math.floor(1.5e6/(N*nPack(s)))));simRes=Engine.simulate(s,pr,N,sims);simKey=key;forecast()},150)}}
+function renderRules(){const R=st.rules,n=x.n,c=esc(x.cN);
   const inp=(id,f,v,max)=>`<input type="number" min="${f==='d'?1:0}" max="${max||100}" data-r="${id}" data-f="${f}" value="${+v}" inputmode="numeric" aria-label="seuil">`;
-  const g=(lab,id,f)=>`<span class="nw">${lab} ≥ ${inp(id,f,R[id][f])} %</span>`;
-  const uP=id=>x.uI>=0?` et ${g('U',id,'u')}`:'';
-  const L={r1:`J'ai toutes les ${c}`,r2:`J'ai toutes les U`,r3:`${g(c,'r3','c')}${uP('r3')}`,
-    r4:`Une SAR (ou plus rare), ${g(c,'r4','c')}${uP('r4')}`,
-    r5:`${g('AR','r5','ar')}, ${g(c,'r5','c')}${uP('r5')}`,
+  const g=(lab,id,f)=>`<span class="nw">${lab} ≥ ${inp(id,f,R[id][f])} %</span>`,uP=id=>x.uI>=0?` et ${g('U',id,'u')}`:'';
+  const L={r1:`J'ai toutes les ${c}`,r2:'J\'ai toutes les U',r3:`${g(c,'r3','c')}${uP('r3')}`,r4:`Une SAR, ${g(c,'r4','c')}${uP('r4')}`,r5:`${g('AR','r5','ar')}, ${g(c,'r5','c')}${uP('r5')}`,
     r6:`Paquet avec <span class="nw">${inp('r6','d',Math.max(1,n-R.r6.m),n)} doubles ou +</span> sur ${n} : <span class="nw">chance ≥ ${inp('r6','p',R.r6.p)} %</span>`};
-  $('#rlist').innerHTML=RULES.map(r=>`<div class="rr" id="rr-${r.id}"><input type="checkbox" data-r="${r.id}" data-f="on"${R[r.id].on?' checked':''} aria-label="Activer cette règle"><div><div class="lab">${L[r.id]}</div><div class="now"></div></div><div class="stt"></div></div>`).join('');
-  updRules()}
-function updRules(){const x=rctx(),R=st.rules,S0=rstate(x,0),res={};
-  const pcS=i=>x.ok(i)?`${x.keys[i]} ${nf(S0.pc(i),0)} %`:null;
-  for(const r of RULES){const el=$('#rr-'+r.id);if(!el)continue;const on=R[r.id].on,app=r.app(x);
-    const N=on&&app?(r.id==='r4'&&!S0.sar?Infinity:reachN(r,x)):null;res[r.id]={on,app,N};
-    let now='';
-    if(r.id==='r1')now=x.ok(x.cI)?`${prep.O[x.cI]} / ${prep.T[x.cI]}`:'';
-    else if(r.id==='r2')now=x.ok(x.uI)?`${prep.O[x.uI]} / ${prep.T[x.uI]}`:'';
+  $('#rlist').innerHTML=RULES.map(r=>`<div class="rr" id="rr-${r.id}"><input type="checkbox" data-r="${r.id}" data-f="on"${R[r.id].on?' checked':''} aria-label="Activer cette règle"><div><div class="lab">${L[r.id]}</div><div class="now"></div></div><div class="stt"></div></div>`).join('')}
+function updRules(v){const S0=v.S0,pr=x.pr,pcS=i=>x.ok(i)?`${x.keys[i]} ${nf(S0.pc(i),0)} %`:null;
+  for(const r of RULES){const el=$('#rr-'+r.id);if(!el)continue;const{on,app,N}=v.res[r.id];let now='';
+    if(r.id==='r1')now=x.ok(x.cI)?`${pr.O[x.cI]} / ${pr.T[x.cI]}`:'';else if(r.id==='r2')now=x.ok(x.uI)?`${pr.O[x.uI]} / ${pr.T[x.uI]}`:'';
     else if(r.id==='r3')now=[pcS(x.cI),pcS(x.uI)].filter(Boolean).join(' · ');
     else if(r.id==='r4')now=[`SAR : ${S0.sar?'oui':'pas encore'}`,pcS(x.cI),pcS(x.uI)].filter(Boolean).join(' · ');
-    else if(r.id==='r5')now=x.ok(x.arI)?[`AR ${prep.O[x.arI]} / ${prep.T[x.arI]} (${nf(S0.pc(x.arI),0)} %)`,pcS(x.cI),pcS(x.uI)].filter(Boolean).join(' · '):'';
+    else if(r.id==='r5')now=x.ok(x.arI)?[`AR ${pr.O[x.arI]} / ${pr.T[x.arI]}`,pcS(x.cI),pcS(x.uI)].filter(Boolean).join(' · '):'';
     else now=pct(S0.p6()/100);
     el.querySelector('.now').textContent=app?'Maintenant : '+now:'Ne s\'applique pas à ce set';
     const stt=el.querySelector('.stt');stt.className='stt';
-    if(!on){stt.textContent='Désactivée';stt.classList.add('na')}
-    else if(!app){stt.textContent='—';stt.classList.add('na')}
-    else if(N===0){stt.textContent='Atteinte';stt.classList.add('hit')}
-    else if(!isFinite(N)){stt.textContent=r.id==='r4'?'Si tu tires une SAR':'Hors de portée';stt.classList.add('na')}
+    if(!on){stt.textContent='Désactivée';stt.classList.add('na')}else if(!app){stt.textContent='—';stt.classList.add('na')}
+    else if(N===0){stt.textContent='Atteinte';stt.classList.add('hit')}else if(!isFinite(N)){stt.textContent=r.id==='r4'?'Si tu tires une SAR':'Hors de portée';stt.classList.add('na')}
     else stt.textContent=`Dans ${nf(N,0)} paquet${N>1?'s':''}`;
-    el.classList.toggle('off',!on)}
-  const act=Object.entries(res).filter(([k,v])=>v.on&&v.app),K=act.length?Math.min(...act.map(([k,v])=>v.N)):Infinity;
-  const bind=isFinite(K)?act.filter(([k,v])=>v.N===K).map(([k])=>k):[];
-  RULES.forEach(r=>{const el=$('#rr-'+r.id);if(el)el.classList.toggle('bind',bind.includes(r.id)&&K>0)});
-  const uN=id=>x.uI>=0?` et U ${R[id].u} %`:'';
-  const name=k=>({r1:`toutes les ${x.cN}`,r2:'toutes les U',r3:`${x.cN} ${R.r3.c} %${uN('r3')}`,r4:`SAR + ${x.cN} ${R.r4.c} %${uN('r4')}`,r5:`AR ${R.r5.ar} % + ${x.cN} ${R.r5.c} %${uN('r5')}`,r6:`${x.n-R.r6.m} doubles ou + à ${R.r6.p} %`})[k];
-  let vt,vs;
-  if(!act.length){vt='Aucune règle active';vs='Active au moins une règle d\'achat.'}
-  else if(K===0){vt='Stop, n\'achète plus';vs='Règle atteinte : '+bind.map(name).join(', ')+'.'}
-  else if(!isFinite(K)){vt='Pas de limite';vs='Aucune règle active ne sera atteinte avec ces réglages.'}
-  else{vt=`Encore ${nf(K,0)} paquet${K>1?'s':''} maximum`;vs=`Soit ${boxes(K)}. Ensuite, la règle « ${bind.map(name).join(' » et « ')} » sera atteinte, en moyenne.`}
-  $('#vd').className='vd'+(K===0&&act.length?' stop':'');$('#vt').textContent=vt;$('#vs').textContent=vs;
-  $('#bar').innerHTML=`<span class="${K===0?'s':'a'}"><b>${esc(K===0&&act.length?'Stop':isFinite(K)?`Encore ${nf(K,0)} max`:'Pas de limite')}</b></span><span>100 % doublons<b>${esc(pct(Engine.fullDup(prep,0)))}</b></span>`;
-}
-function renderInfo(){
-  const s=cur();
-  const hyp=['Dans un paquet, une carte d\'une rareté donnée est tirée au hasard parmi les cartes de cette rareté, sans doublon à l\'intérieur du paquet.',
-   s.id==='M2a'||s.id==='M6a'?'Structure du paquet propre à ce produit : détail des emplacements dans « Modifier le set sélectionné ».':'Structure des boosters japonais 5 cartes (observée, non officielle) : cartes 1 à 3 communes ; carte 4 peu commune, parfois remplacée par AR, SR, SAR ou MUR ; carte 5 peu commune, rare ou double rare.',
-   'Taux par boîte issus des relevés de la communauté japonaise, pas de chiffres officiels. Tu peux les corriger.',
-   'Paquets indépendants : garanties par boîte et « god packs » ignorés. Acheter des boîtes scellées lisse un peu les résultats sans changer l\'ordre de grandeur.',
-   'Une rareté décochée est toujours comptée comme doublon (pratique pour les miroirs, énergies ou raretés que tu ne vises pas).'];
-  if(s.note)hyp.unshift(`${s.id} : ${s.note}`);
-  $('#hyp').innerHTML=hyp.map(h=>`<li>${esc(h)}</li>`).join('');
+    el.classList.toggle('off',!on);el.classList.toggle('bind',v.bind.includes(r.id)&&v.K>0)}
+  $('#rsum').textContent=!v.act?'aucune active':v.K===0?'atteinte : '+v.bind.map(k=>rname(x,k)).join(', '):isFinite(v.K)?`la plus proche : ${v.bind.map(k=>rname(x,k)).join(', ')}, dans ${nf(v.K,0)}`:''}
+function renderSetInfo(){const s=cur();
+  const hyp=[s.note,'Taux par boîte non officiels (relevés de la communauté japonaise), modifiables ci-dessous.'].filter(Boolean);
   const href=u=>/^https:\/\//.test(u||'')?esc(u):'#';
-  $('#src').innerHTML=[...(s.sources||[]),...(data.common||[])].map(x=>`<li><a href="${href(x.u)}" target="_blank" rel="noopener">${esc(x.l)}</a></li>`).join('');
+  $('#hyp').innerHTML=hyp.map(h=>`<li>${esc(h)}</li>`).join('')+(s.sources||[]).map(z=>`<li><a href="${href(z.u)}" target="_blank" rel="noopener">${esc(z.l)}</a></li>`).join('');
   const g=q=>'https://www.google.com/search?q='+encodeURIComponent(q);
-  $('#slinks').innerHTML=[[`${s.jp} 封入率`,`Taux de ${s.id}`],[`${s.jp} カードリスト 全種類`,`Liste complète de ${s.id}`]].map(([q,l])=>`<a href="${href(g(q))}" target="_blank" rel="noopener">${esc(l)}</a>`).join('')+(s.official?`<a href="${href(s.official)}" target="_blank" rel="noopener">Page officielle ${esc(s.id)}</a>`:'');
-  $('#glinks').innerHTML=`<a href="https://www.pokemon-card.com/products/" target="_blank" rel="noopener">Produits officiels</a><a href="${g('ポケカ MEGA 新弾 発売日 拡張パック')}" target="_blank" rel="noopener">Nouveaux sets MEGA</a><a href="https://bulbapedia.bulbagarden.net/wiki/List_of_Japanese_Pok%C3%A9mon_Trading_Card_Game_expansions" target="_blank" rel="noopener">Extensions japonaises (Bulbapedia)</a>`;
-  const custom=!!LS.get('pkdup:data');
-  $('#dver').textContent=`Données du ${date(data.updated||'2026-11-25')} · ${data.sets.length} sets${custom?' · version modifiée par toi':''}.`;
-}
-function renderEditor(){
-  const s=cur(),keys=s.rarities.map(r=>r.key);
+  $('#slinks').innerHTML=`<a href="${href(g(s.jp+' 封入率'))}" target="_blank" rel="noopener">Chercher les taux</a><a href="${href(g(s.jp+' カードリスト 全種類'))}" target="_blank" rel="noopener">Chercher la liste complète</a>`+(s.official?`<a href="${href(s.official)}" target="_blank" rel="noopener">Page officielle</a>`:'');
+  $('#dsum').textContent=STAT[s.status]||'vérifiées'}
+function renderEditor(){const s=cur(),keys=s.rarities.map(r=>r.key);
   const head=s.slots.map((sl,i)=>`<th class="n">${esc(sl.label)}<br><label>× <input type="number" min="1" max="12" data-e="n" data-i="${i}" value="${Math.max(1,sl.n|0)}" aria-label="cartes dans cet emplacement"></label><br><select data-e="fill" data-i="${i}" aria-label="rareté de remplissage">${keys.map(k=>`<option${k===sl.filler?' selected':''}>${esc(k)}</option>`).join('')}</select></th>`).join('');
-  const body=s.rarities.map((r,ri)=>`<tr><td><b>${esc(r.key)}</b></td><td class="n"><input type="number" min="0" data-e="cnt" data-r="${ri}" value="${r.count|0}" aria-label="cartes ${esc(r.key)}"></td>${s.slots.map((sl,i)=>`<td class="n">${r.key===sl.filler?'<span class="sub">reste</span>':`<input type="number" min="0" step="any" data-e="hit" data-i="${i}" data-k="${esc(r.key)}" value="${sl.hits&&sl.hits[r.key]?+sl.hits[r.key]:''}" placeholder="0" aria-label="${esc(r.key)} par boîte">`}</td>`).join('')}</tr>`).join('');
-  $('#edbody').innerHTML=`<p>Cases : nombre moyen de cartes de cette rareté par boîte, dans cet emplacement. « reste » : rareté qui remplit l'emplacement le reste du temps.</p>
-  <div class="btns"><label>Paquets par boîte <input type="number" min="1" data-e="ppb" value="${s.packsPerBox}" style="width:4.5em"></label><label>Prix du paquet (¥) <input type="number" min="0" data-e="price" value="${s.price}" style="width:5em"></label></div>
+  const body=s.rarities.map((r,ri)=>`<tr><td><b>${esc(r.key)}</b></td><td class="n"><input type="number" min="0" data-e="cnt" data-r="${ri}" value="${r.count|0}" aria-label="cartes ${esc(r.key)}"></td>${s.slots.map((sl,i)=>`<td class="n">${r.key===sl.filler?'<span class="cap">reste</span>':`<input type="number" min="0" step="any" data-e="hit" data-i="${i}" data-k="${esc(r.key)}" value="${sl.hits&&sl.hits[r.key]?+sl.hits[r.key]:''}" placeholder="0" aria-label="${esc(r.key)} par boîte">`}</td>`).join('')}</tr>`).join('');
+  $('#edbody').innerHTML=`<p>Nombre de cartes par rareté, et nombre moyen par boîte dans chaque emplacement du paquet (« reste » : rareté qui remplit l'emplacement le reste du temps).</p>
+  <div class="btns"><label>Paquets par boîte <input type="number" min="1" data-e="ppb" value="${s.packsPerBox}" style="width:4.5em"></label><label>Prix (¥) <input type="number" min="0" data-e="price" value="${s.price}" style="width:5em"></label></div>
   <div class="scroll mx"><table><thead><tr><th>Rareté</th><th class="n">Cartes</th>${head}</tr></thead><tbody>${body}</tbody></table></div>
-  <p style="margin-top:16px">JSON du set (pour ajouter une rareté ou un emplacement) :</p><textarea id="sjson" spellcheck="false">${esc(JSON.stringify(s,null,1))}</textarea><div class="btns"><button id="sapply">Appliquer ce JSON</button>${DATA0.sets.some(x=>x.id===s.id)?'':'<button id="sdel">Supprimer ce set</button>'}</div><p class="msg" id="emsg"></p>`;
-}
-function all(){renderHead();renderRows();compute();renderRules();renderInfo();renderEditor()}
-const msg=(id,t,err)=>{const e=$(id);e.textContent=t;e.classList.toggle('err',!!err)};
+  <p style="margin-top:14px">JSON du set (pour ajouter une rareté ou un emplacement) :</p><textarea id="sjson" spellcheck="false">${esc(JSON.stringify(s,null,1))}</textarea>
+  <div class="btns"><button id="sapply">Appliquer ce JSON</button><button id="dup">Dupliquer ce set</button>${DATA0.sets.some(z=>z.id===s.id)?'':'<button id="sdel">Supprimer ce set</button>'}</div><p class="msg" id="emsg"></p>`}
+function renderSet(){$('#imgp').hidden=true;$('#simn').value=st.simN||10;renderSetHead();renderRows();x=ctx(cur());renderRules();compute();renderSetInfo();renderEditor()}
+
+/* ---------- réglages ---------- */
+function renderCfg(){$('#gh-off').hidden=CAN_SYNC;$('#gh-on').hidden=!CAN_SYNC;const c=GH.c;$('#toklink').href=TOKEN_URL;
+  $('#ghtok').value=c.token?'••••••••':'';$('#ghrepo').value=c.repo;$('#ghbr').value=c.branch;$('#ghpath').value=c.path;
+  if(!$('#ghmsg').textContent)msg('#ghmsg',ghOn()?'Connecté à '+c.repo+'.':'');
+  const g=q=>'https://www.google.com/search?q='+encodeURIComponent(q),href=u=>/^https:\/\//.test(u||'')?esc(u):'#';
+  $('#glinks').innerHTML=`<a href="https://www.pokemon-card.com/products/" target="_blank" rel="noopener">Produits officiels</a><a href="${href(g('ポケカ MEGA 新弾 発売日 拡張パック'))}" target="_blank" rel="noopener">Nouveaux sets MEGA</a><a href="https://bulbapedia.bulbagarden.net/wiki/List_of_Japanese_Pok%C3%A9mon_Trading_Card_Game_expansions" target="_blank" rel="noopener">Extensions japonaises (Bulbapedia)</a>`;
+  $('#dver').textContent=`Données du ${date(data.updated||'2026-11-27')} · ${data.sets.length} sets${LS.get('pkdup:data')?' · version modifiée':''}`;
+  $('#csrc').innerHTML=(data.common||[]).map(z=>`<li><a href="${href(z.u)}" target="_blank" rel="noopener">${esc(z.l)}</a></li>`).join('')}
+
+/* ---------- navigation ---------- */
+function route(){const h=decodeURIComponent(location.hash.slice(1));
+  if(h==='reglages')view='cfg';else if(h.startsWith('set-')&&data.sets.some(s=>s.id===h.slice(4))){st.sel=h.slice(4);LS.set('pkdup:state',st);view='set'}else view='home';
+  for(const k of['home','set','cfg'])$('#v-'+k).hidden=k!==view;renderBar();
+  if(view==='home')renderHome();else if(view==='set')renderSet();else renderCfg();window.scrollTo(0,0)}
+addEventListener('hashchange',route);
 
 /* ---------- événements ---------- */
-const rowCtx=el=>{const row=el.closest('.row');const s=cur();return{row,s,r:s.rarities.find(x=>x.key===row.dataset.k)}};
-$('#set').addEventListener('change',e=>{st.sel=e.target.value;save();all()});
+const rowCtx=el=>{const row=el.closest('.row'),s=cur();return{row,s,r:s.rarities.find(z=>z.key===row.dataset.k)}};
 $('#rows').addEventListener('input',e=>{if(e.target.type!=='number')return;const{row,s,r}=rowCtx(e.target);const v=Math.max(0,Math.min(r.count,parseInt(e.target.value,10)||0));owned(s)[r.key]=v;save();updRow(row,r,v,tracked(s)[r.key]);compute()});
-$('#rows').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;const{row,s,r}=rowCtx(b);const o=owned(s);let v=Math.min(r.count,o[r.key]|0);v=a==='inc'?Math.min(r.count,v+1):a==='dec'?Math.max(0,v-1):r.count;o[r.key]=v;row.querySelector('input[type=number]').value=v;save();updRow(row,r,v,tracked(s)[r.key]);compute()});
+$('#rows').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a,{row,s,r}=rowCtx(b),o=owned(s);let v=Math.min(r.count,o[r.key]|0);v=a==='inc'?Math.min(r.count,v+1):a==='dec'?Math.max(0,v-1):r.count;o[r.key]=v;row.querySelector('input[type=number]').value=v;save();updRow(row,r,v,tracked(s)[r.key]);compute()});
 $('#rows').addEventListener('change',e=>{if(e.target.dataset.a!=='trk')return;const{row,s,r}=rowCtx(e.target);(st.tracked[s.id]=st.tracked[s.id]||{})[r.key]=e.target.checked;save();updRow(row,r,Math.min(r.count,owned(s)[r.key]|0),e.target.checked);compute()});
-$('#qgo').addEventListener('click',()=>{const s=cur(),o=owned(s);let n=0;for(const m of $('#quick').value.matchAll(/(\d+)\s*([A-Za-z]+)/g)){const r=s.rarities.find(x=>x.key.toLowerCase()===m[2].toLowerCase());if(r){o[r.key]=Math.min(r.count,+m[1]);n++}}save();renderRows();compute();$('#quick').value='';$('#quick').placeholder=n?`${n} rareté${n>1?'s':''} mise${n>1?'s':''} à jour`:'Rien reconnu : écris par ex. 32 C, 12 U'});
+$('#qgo').addEventListener('click',()=>{const s=cur(),o=owned(s);let n=0;for(const m of $('#quick').value.matchAll(/(\d+)\s*([A-Za-z]+)/g)){const r=s.rarities.find(z=>z.key.toLowerCase()===m[2].toLowerCase());if(r){o[r.key]=Math.min(r.count,+m[1]);n++}}save();renderRows();compute();$('#quick').value='';$('#quick').placeholder=n?`${n} rareté${n>1?'s':''} mise${n>1?'s':''} à jour`:'Rien reconnu : écris par ex. 32 C, 12 U'});
 $('#quick').addEventListener('keydown',e=>{if(e.key==='Enter')$('#qgo').click()});
-$('#simn').addEventListener('input',forecast);
-$('#rlist').addEventListener('input',e=>{const d=e.target.dataset;if(!d.r||d.f==='on')return;const R=st.rules[d.r],n=nPack(cur());let v=parseInt(e.target.value,10);if(!Number.isFinite(v))return;
-  if(d.f==='d'){v=Math.max(1,Math.min(n,v));R.m=n-v}else R[d.f]=Math.max(0,Math.min(100,v));save();updRules()});
-$('#rlist').addEventListener('change',e=>{const d=e.target.dataset;if(d.f!=='on')return;st.rules[d.r].on=e.target.checked;save();updRules()});
-$('#golink').addEventListener('click',()=>$('#rules').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}));
-$('#simsec').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=$('#simn'),ppb=cur().packsPerBox;
-  if(b.dataset.n)i.value=Math.max(1,Math.min(2000,(parseInt(i.value,10)||0)+(+b.dataset.n)));else if(b.dataset.p)i.value=b.dataset.p==='box'?ppb:b.dataset.p==='box2'?2*ppb:+b.dataset.p;forecast()});
 $('#qclr').addEventListener('click',()=>{st.owned[cur().id]={};save();renderRows();compute()});
+$('#simn').addEventListener('input',forecast);
+$('#pred').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=$('#simn');if(b.dataset.n)i.value=Math.max(1,Math.min(2000,(parseInt(i.value,10)||0)+(+b.dataset.n)));else if(b.dataset.p)i.value=b.dataset.p==='box'?cur().packsPerBox:+b.dataset.p;forecast()});
+$('#rlist').addEventListener('input',e=>{const d=e.target.dataset;if(!d.r||d.f==='on')return;const R=st.rules[d.r];let v=parseInt(e.target.value,10);if(!Number.isFinite(v))return;
+  if(d.f==='d'){v=Math.max(1,Math.min(x.n,v));R.m=x.n-v}else R[d.f]=Math.max(0,Math.min(100,v));save();compute()});
+$('#rlist').addEventListener('change',e=>{const d=e.target.dataset;if(d.f!=='on')return;st.rules[d.r].on=e.target.checked;save();compute()});
+$('#pk').addEventListener('click',()=>{$('#imgp').hidden=!$('#imgp').hidden;msg('#imgmsg','')});
+function setImg(v){const s=cur();if(v)st.img[s.id]=v;else delete st.img[s.id];save();renderSetHead();msg('#imgmsg',v?'Image enregistrée.':'Image retirée.')}
+$('#imgf').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const sc=Math.min(1,420/im.height),c=document.createElement('canvas');c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);setImg(c.toDataURL('image/jpeg',.8))};im.onerror=()=>msg('#imgmsg','Image illisible.',true);im.src=rd.result};rd.readAsDataURL(f)});
+$('#imgok').addEventListener('click',()=>{const u=$('#imgu').value.trim();if(!/^https:\/\//.test(u)){msg('#imgmsg','Colle une adresse qui commence par https://',true);return}$('#imgu').value='';setImg(u)});
+$('#imgx').addEventListener('click',()=>setImg(null));
 $('#edbody').addEventListener('change',e=>{const d=e.target.dataset;if(!d.e)return;const s=cur(),v=+e.target.value;
   if(d.e==='cnt')s.rarities[+d.r].count=Math.max(0,v|0);else if(d.e==='hit'){const h=s.slots[+d.i].hits=s.slots[+d.i].hits||{};if(v>0)h[d.k]=v;else delete h[d.k]}else if(d.e==='fill')s.slots[+d.i].filler=e.target.value;else if(d.e==='n')s.slots[+d.i].n=Math.max(1,v|0);else if(d.e==='ppb'){if(v>0)s.packsPerBox=v}else if(d.e==='price')s.price=Math.max(0,v);
-  s.cardsPerPack=nPack(s);if(s.status==='vérifiée')s.status='modifiée';saveData();renderHead();renderRows();compute();renderInfo();if(d.e==='fill'||d.e==='n')renderEditor();else $('#sjson').value=JSON.stringify(s,null,1)});
-$('#edbody').addEventListener('click',e=>{const s=cur();if(e.target.id==='sapply'){try{const o=JSON.parse($('#sjson').value);if(!validSet(o))throw 0;const old=s.id,n=normSet(o);if(n.id!==old)data.sets=data.sets.filter(x=>x.id!==old);upsert(n);st.sel=n.id;save();all();$('#ed').open=true;msg('#emsg','Set mis à jour.')}catch(er){msg('#emsg','JSON invalide : il faut id, rarities [{key,count}], slots [{n,filler,hits}] et packsPerBox.',true)}}
-  if(e.target.id==='sdel'){data.sets=data.sets.filter(x=>x.id!==s.id);st.sel=data.sets[0].id;save();saveData();all()}});
-$('#exp').addEventListener('click',()=>{$('#io').value=JSON.stringify(data,null,1);msg('#iomsg','Toutes les données sont dans la zone de texte : copie-les pour les garder.')});
-$('#cpy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('#io').value);msg('#iomsg','Copié.')}catch(e){$('#io').select();msg('#iomsg','Copie refusée par le navigateur : le texte est sélectionné, fais Ctrl/Cmd + C.',true)}});
-$('#imp').addEventListener('click',()=>{try{const o=JSON.parse($('#io').value);if(o&&Array.isArray(o.sets)){const sets=o.sets.filter(validSet).map(normSet);if(!sets.length)throw 0;data={version:1,updated:o.updated||new Date().toISOString().slice(0,10),sets,common:o.common||DATA0.common};if(!data.sets.some(x=>x.id===st.sel))st.sel=data.sets[0].id;msg('#iomsg',`${sets.length} sets importés.`)}else if(validSet(o)){upsert(normSet(o));st.sel=o.id;msg('#iomsg',`Set ${o.id} importé.`)}else throw 0;saveData();save();all()}catch(e){msg('#iomsg','Import impossible : colle un JSON avec "sets": [...] ou un seul set valide.',true)}});
-$('#dup').addEventListener('click',()=>{const s=clone(cur());s.id=s.id+'-copie';s.name=s.name+' (copie)';s.status='modifiée';upsert(normSet(s));st.sel=s.id;save();all();$('#ed').open=true;msg('#iomsg','Copie créée : modifie-la dans « Modifier le set sélectionné ».')});
-$('#rst').addEventListener('click',()=>{LS.del('pkdup:data');data=clone(DATA0);if(!data.sets.some(x=>x.id===st.sel))st.sel='M6';save();all();msg('#iomsg','Données d\'origine rétablies (ta collection est conservée).')});
+  s.cardsPerPack=nPack(s);if(s.status==='vérifiée')s.status='modifiée';saveData();renderSetHead();renderRows();x=ctx(s);renderRules();compute();renderSetInfo();if(d.e==='fill'||d.e==='n')renderEditor();else $('#sjson').value=JSON.stringify(s,null,1)});
+$('#edbody').addEventListener('click',e=>{const s=cur(),id=e.target.id;
+  if(id==='sapply'){try{const o=JSON.parse($('#sjson').value);if(!validSet(o))throw 0;const old=s.id,n=normSet(o);if(n.id!==old)data.sets=data.sets.filter(z=>z.id!==old);upsert(n);st.sel=n.id;save();location.hash='set-'+encodeURIComponent(n.id);route();$('#ddet').open=true;msg('#emsg','Set mis à jour.')}catch(er){msg('#emsg','JSON invalide : il faut id, rarities [{key,count}], slots [{n,filler,hits}] et packsPerBox.',true)}}
+  if(id==='dup'){const c=clone(s);c.id=s.id+'-copie';c.name=s.name+' (copie)';c.status='modifiée';upsert(normSet(c));location.hash='set-'+encodeURIComponent(c.id)}
+  if(id==='sdel'){data.sets=data.sets.filter(z=>z.id!==s.id);saveData();location.hash=''}});
+$('#appbar').addEventListener('click',async e=>{if(e.target.id!=='savebtn')return;saving=true;saveErr='';updSave();try{await ghSave()}catch(er){saveErr=er.message||'Échec de la sauvegarde.'}saving=false;updSave();if(view==='cfg')msg('#ghmsg',saveErr||'Sauvegardé sur GitHub.',!!saveErr)});
+$('#notice').addEventListener('click',e=>{const a=e.target.dataset.nb;if(!a||!pendingRem)return;if(a==='load')applyRemote(pendingRem);else{GH.set({lastSha:pendingRem.sha});$('#notice').hidden=true;updSave()}pendingRem=null});
+$('#ghcon').addEventListener('click',async()=>{const tok=$('#ghtok').value.trim();const o={repo:$('#ghrepo').value.trim()||'QuirkyTurtle7/doublons-booster',branch:$('#ghbr').value.trim()||'sauvegarde',path:$('#ghpath').value.trim()||'sauvegarde.json'};
+  if(tok&&!/^•+$/.test(tok))o.token=tok;if(!o.token&&!GH.c.token){msg('#ghmsg','Colle d\'abord ton jeton.',true);return}
+  const prev=GH.c;if(o.repo!==prev.repo||o.branch!==prev.branch||o.path!==prev.path)Object.assign(o,{lastSha:null,snap:null});GH.set(o);renderBar();msg('#ghmsg','Connexion…');
+  try{const r=await gh('GET','/branches/'+encodeURIComponent(GH.c.branch));if(!r.ok)throw ghErr(r);await syncCheck(false)}catch(er){msg('#ghmsg',er.message||'GitHub injoignable.',true)}renderCfg();updSave()});
+$('#ghload').addEventListener('click',async()=>{if(!ghOn()){msg('#ghmsg','Connecte d\'abord ton jeton.',true);return}try{const rem=await ghLoad();if(!rem){msg('#ghmsg','Aucune sauvegarde sur GitHub.',true);return}applyRemote(rem);msg('#ghmsg','Sauvegarde GitHub chargée.')}catch(er){msg('#ghmsg',er.message,true)}});
+$('#ghoff').addEventListener('click',()=>{LS.del('pkdup:gh');saveErr='';renderBar();renderCfg();msg('#ghmsg','Jeton oublié sur cet appareil.')});
+$('#exp').addEventListener('click',()=>{$('#io').value=JSON.stringify(data,null,1);msg('#iomsg','Toutes les données sont dans la zone de texte.')});
+$('#cpy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('#io').value);msg('#iomsg','Copié.')}catch(e){$('#io').select();msg('#iomsg','Copie refusée : le texte est sélectionné, fais Ctrl/Cmd + C.',true)}});
+$('#imp').addEventListener('click',()=>{try{const o=JSON.parse($('#io').value);if(o&&Array.isArray(o.sets)){const sets=o.sets.filter(validSet).map(normSet);if(!sets.length)throw 0;data={version:1,updated:o.updated||new Date().toISOString().slice(0,10),sets,common:o.common||DATA0.common};if(!data.sets.some(z=>z.id===st.sel))st.sel=data.sets[0].id;msg('#iomsg',`${sets.length} sets importés.`)}else if(validSet(o)){upsert(normSet(o));msg('#iomsg',`Set ${o.id} importé.`)}else throw 0;saveData();save();renderCfg()}catch(e){msg('#iomsg','Import impossible : colle un JSON avec "sets": [...] ou un seul set valide.',true)}});
+$('#rst').addEventListener('click',()=>{LS.del('pkdup:data');data=clone(DATA0);if(!data.sets.some(z=>z.id===st.sel))st.sel='M7';save();renderCfg();msg('#iomsg','Données d\'origine rétablies (ta collection est conservée).')});
 $('#cprompt').addEventListener('click',async()=>{const p=`Tu tiens à jour les données de mon app « Doublons de booster » (boosters Pokémon japonais, série MEGA).
 Fais des recherches web (pokemon-card.com, Bulbapedia, altema.jp, premium.gamepedia.jp, yuyu-tei.jp, etc.) puis :
 1. ajoute tout set de la série MEGA sorti ou annoncé au Japon et absent de la liste (extensions, high class, spéciaux) ;
-2. corrige le nombre de cartes par rareté des sets dont "status" n'est pas "vérifiée" (et vérifie les autres) ;
+2. corrige le nombre de cartes par rareté des sets dont "status" n'est pas "vérifiée" (et vérifie les autres) en recoupant au moins deux sources ;
 3. mets à jour les taux par boîte (封入率) dans "slots[].hits" si de meilleures données existent ;
 4. garde exactement le même schéma, ajoute les sources utilisées dans "sources", mets "status" à "vérifiée" seulement si la liste complète est publiée, et "updated" à la date du jour.
 Rends uniquement le JSON complet, sans commentaire.
 
 ${JSON.stringify(data)}`;
-  try{await navigator.clipboard.writeText(p);msg('#pmsg','Consigne copiée avec tes données actuelles.')}catch(e){$('#io').value=p;msg('#pmsg','Copie refusée : la consigne est dans la zone de texte ci-dessous, copie-la à la main.',true)}});
+  try{await navigator.clipboard.writeText(p);msg('#pmsg','Consigne copiée avec tes données actuelles.')}catch(e){$('#io').value=p;msg('#pmsg','Copie refusée : la consigne est dans la zone de texte, copie-la à la main.',true)}});
 
-$('#simn').value=st.simN||10;
-all();
+route();
+if(ghOn())syncCheck(true);
 }
 </script>
 <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>

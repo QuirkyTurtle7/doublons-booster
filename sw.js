@@ -1,6 +1,6 @@
 // Doublons de booster — service worker : l'app fonctionne hors ligne.
 // Changer VERSION à chaque mise à jour des fichiers.
-const VERSION = 'doublons-v4';
+const VERSION = 'doublons-v5';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -33,7 +33,8 @@ self.addEventListener('fetch', e => {
   // Fichiers de l'app et polices : cache d'abord, rafraîchi en arrière-plan.
   const sameOrigin = url.origin === self.location.origin;
   const font = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
-  if (!sameOrigin && !font) return;
+  const image = req.destination === 'image';
+  if (!sameOrigin && !font && !image) return; // l'API GitHub passe toujours par le réseau
   e.respondWith(
     caches.match(req).then(hit => {
       const net = fetch(req)
